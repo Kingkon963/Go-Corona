@@ -15,6 +15,8 @@ int b = 255;
 
 int ix=0, iy=0;
 
+int mpx, mpy;
+
 
 int getPercentage(int num, int percent){
 	return (int) ((num*percent) / 100);
@@ -25,13 +27,27 @@ struct MenuItem{
 	int x, y;
 	int width = 400;
 	int height = 50;
+	bool onHoverState = false;
+
 	MenuItem(){}
 	MenuItem(int x, int y, char *title) : x(x), y(y), title(title){
-		
+
 	}
+
 	void display(){
-		iRectangle(x, y, width, height);
-		//cout << x + getPercentage(width, 50) << endl;
+		if ((mpx >= x && mpx <= (x + width)) && (mpy >= y && mpy <= (y + height)))
+			onHoverState = true;
+
+		if (onHoverState){
+			iSetColor(0, 0, 0);
+			iFilledRectangle(x, y, width, height);
+			iSetColor(255, 255, 255);
+		}
+		else{
+			iRectangle(x, y, width, height);
+		}
+
+		cout << mpx << " " << mpy << endl;
 		iText(x + getPercentage(width, 40), y + getPercentage(height, 40), title, GLUT_BITMAP_HELVETICA_18);
 	}
 };
@@ -109,7 +125,8 @@ void iMouseMove(int mx, int my)
 //*******************************************************************ipassiveMouse***********************************************************************//
 void iPassiveMouseMove(int mx, int my)
 {
-
+	mpx = mx;
+	mpy = my;
 }
 
 void iMouse(int button, int state, int mx, int my)
