@@ -13,6 +13,8 @@ int r = 255;
 int g = 255;
 int b = 255;
 
+int ix=0, iy=0;
+
 
 int getPercentage(int num, int percent){
 	return (int) ((num*percent) / 100);
@@ -23,6 +25,7 @@ struct MenuItem{
 	int x, y;
 	int width = 400;
 	int height = 50;
+	MenuItem(){}
 	MenuItem(int x, int y, char *title) : x(x), y(y), title(title){
 		
 	}
@@ -33,11 +36,49 @@ struct MenuItem{
 	}
 };
 
+struct Menu{
+	char **titles;
+	int x = 0, y = 0;
+	int dy = 70, totalItems;
+	MenuItem **items;
+	
+	Menu(int x, int y, char titles[][15], int totalItems) :x(x), y(y), totalItems(totalItems){
+		this->titles = (char**)malloc(sizeof(MenuItem)*totalItems);
+		for (int i = 0; i < totalItems; i++) (this->titles)[i] = titles[i];
+		//for (int i = 0; i < totalItems; i++){
+		//	cout << (this->items)[i] << endl;
+		//}
+		items = (MenuItem**) malloc(sizeof(MenuItem)*totalItems);
+	}
+	
+	void display(){
+		for (int i = 0; i < totalItems; i++){
+			//cout << "From Menu.display() " << i << " " << x << endl;
+			/*MenuItem item(x, y, (this->titles)[i]);
+			item.display();
+			y += dy;*/
+			//MenuItem items[i];
+			items[i] = new MenuItem();
+
+			items[i][0].x = this->x;
+			items[i][0].y = this->y;
+			items[i][0].title = this->titles[i];
+			items[i][0].display();
+
+			y += dy;
+			delete items[i];
+		}
+		y -= dy*totalItems; // Resetting y
+	}
+};
 void background()
 {
 	iFilledRectangle(0, 0, windowWidth, windowHeight);
 	
 }
+
+char menuTitles[4][15] = { "Credits", "Settings", "High Scores", "New Game" };
+Menu menu(300, 300, menuTitles, 4);
 
 void iDraw()
 {
@@ -47,11 +88,9 @@ void iDraw()
 	background();
 
 	iSetColor(r, g, b);
-
+	menu.display();
 	
-	MenuItem n(200, 200, "New Game");
-	n.display();
-	
+	//iShowBMP2(ix, iy, "images//person.bmp", -1);
 }
 
 
@@ -65,12 +104,12 @@ void iDraw()
 
 void iMouseMove(int mx, int my)
 {
-	
+
 }
 //*******************************************************************ipassiveMouse***********************************************************************//
 void iPassiveMouseMove(int mx, int my)
 {
-	
+
 }
 
 void iMouse(int button, int state, int mx, int my)
@@ -78,7 +117,6 @@ void iMouse(int button, int state, int mx, int my)
 	
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-
 		
 	}
 	
