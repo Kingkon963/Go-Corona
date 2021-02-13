@@ -16,7 +16,7 @@ int b = 255;
 
 int ix=0, iy=0;
 
-int mpx, mpy;
+int mpx, mpy, count=0;
 
 string currentPage = "homePage";
 
@@ -41,8 +41,6 @@ typedef struct MenuItem{
 		return (mx >= x && mx <= (x + width)) && (my >= y && my <= (y + height));
 	}
 	void display(){
-
-
 		if (this->isInsideThis( mpx, mpy )) 
 			onHoverState = true;
 		else 
@@ -74,8 +72,6 @@ typedef struct MenuItem{
 
 char* menuTitles[4] = { "Credits", "Settings", "High Scores", "New Game" };
 struct Menu{
-
-	
 	int x = 0, y = 0;
 	int dy = 70, totalItems;
 	int width, height;
@@ -117,8 +113,22 @@ void homePage(){
 	menu.display();
 }
 
+
+char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
+int runnngIndex = 0;
+
+void newGame(){
+	iShowBMP2((windowWidth / 2) - 85, 0, person_run[runnngIndex++], 0);
+	if (runnngIndex > 1) runnngIndex = 0;
+	iDelayMS(125);
+
+	iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
+	iShowBMP2(windowWidth - 110, windowHeight - 50, "images//heart.bmp", 0);
+}
+
+
 void creditPage(){
-	iShowBMP2(10, windowHeight-60, "images//home.bmp", 0);
+
 	//ImgButton home(10, windowHeight - 60, "images//home.bmp", "homePage");
 	//home.display();
 }
@@ -127,7 +137,7 @@ void iDraw()
 {
 	iClear();
 	
-	iSetColor(29, 67, 84);
+	iSetColor(0, 48, 73);
 	background();
 
 	iSetColor(r, g, b);
@@ -136,6 +146,8 @@ void iDraw()
 
 	if (currentPage == "homePage")
 		homePage();
+	else if (currentPage == "New Game")
+		newGame();
 	else if (currentPage == "Credits")
 		creditPage();
 }
