@@ -1,5 +1,6 @@
 #include "iGraphics.h"
 #include <iostream>
+#include <array>
 using namespace std;
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Idraw Here::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
@@ -17,84 +18,110 @@ int ix=0, iy=0;
 
 int mpx, mpy;
 
+string currentPage = "homePage";
+
 
 int getPercentage(int num, int percent){
 	return (int) ((num*percent) / 100);
 }
 
-struct MenuItem{
+typedef struct MenuItem{
 	char *title;
 	int x, y;
 	int width = 400;
 	int height = 50;
-	bool onHoverState = false;
-
+	bool onHoverState = false, firstEntry = true;
+	
 	MenuItem(){}
 	MenuItem(int x, int y, char *title) : x(x), y(y), title(title){
 
 	}
 
+	bool isInsideThis(int mx, int my){ //true if cursor is inside of the MenuItem
+		return (mx >= x && mx <= (x + width)) && (my >= y && my <= (y + height));
+	}
 	void display(){
-		if ((mpx >= x && mpx <= (x + width)) && (mpy >= y && mpy <= (y + height)))
+
+
+		if (this->isInsideThis( mpx, mpy )) 
 			onHoverState = true;
+		else 
+			onHoverState = false;
 
 		if (onHoverState){
 			iSetColor(0, 0, 0);
 			iFilledRectangle(x, y, width, height);
 			iSetColor(255, 255, 255);
+			if (firstEntry){
+				PlaySound("Sounds\\btn_hover.wav", NULL, SND_ASYNC);
+				firstEntry = false;
+			}
 		}
 		else{
 			iRectangle(x, y, width, height);
+			firstEntry = true;
 		}
 
 		cout << mpx << " " << mpy << endl;
 		iText(x + getPercentage(width, 40), y + getPercentage(height, 40), title, GLUT_BITMAP_HELVETICA_18);
 	}
-};
 
+	void cliked(){
+		currentPage = this->title;
+	}
+} MenuItem;
+
+
+char* menuTitles[4] = { "Credits", "Settings", "High Scores", "New Game" };
 struct Menu{
-	char **titles;
+
+	
 	int x = 0, y = 0;
 	int dy = 70, totalItems;
-	MenuItem **items;
+	int width, height;
+	MenuItem *items;
 	
-	Menu(int x, int y, char titles[][15], int totalItems) :x(x), y(y), totalItems(totalItems){
-		this->titles = (char**)malloc(sizeof(MenuItem)*totalItems);
-		for (int i = 0; i < totalItems; i++) (this->titles)[i] = titles[i];
-		//for (int i = 0; i < totalItems; i++){
-		//	cout << (this->items)[i] << endl;
-		//}
-		items = (MenuItem**) malloc(sizeof(MenuItem)*totalItems);
+	Menu(int x, int y, int width, int height, MenuItem items[], int totalItems) :x(x), y(y), width(width), height(height), totalItems(totalItems){
+		this->items = items;
 	}
 	
 	void display(){
 		for (int i = 0; i < totalItems; i++){
-			//cout << "From Menu.display() " << i << " " << x << endl;
-			/*MenuItem item(x, y, (this->titles)[i]);
-			item.display();
-			y += dy;*/
-			//MenuItem items[i];
-			items[i] = new MenuItem();
-
-			items[i][0].x = this->x;
-			items[i][0].y = this->y;
-			items[i][0].title = this->titles[i];
-			items[i][0].display();
+			items[i].x = this->x;
+			items[i].y = this->y;
+			items[i].width = this->width;
+			items[i].height = this->height;
+			items[i].title = menuTitles[i];
+			items[i].display();
 
 			y += dy;
-			delete items[i];
 		}
 		y -= dy*totalItems; // Resetting y
 	}
 };
+
+
 void background()
 {
 	iFilledRectangle(0, 0, windowWidth, windowHeight);
 	
 }
 
-char menuTitles[4][15] = { "Credits", "Settings", "High Scores", "New Game" };
-Menu menu(300, 300, menuTitles, 4);
+
+int totalMenuItems = 4;
+MenuItem menuItems[4];
+Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
+
+
+void homePage(){
+	menu.display();
+}
+
+void creditPage(){
+	iShowBMP2(10, windowHeight-60, "images//home.bmp", 0);
+	//ImgButton home(10, windowHeight - 60, "images//home.bmp", "homePage");
+	//home.display();
+}
 
 void iDraw()
 {
@@ -104,9 +131,13 @@ void iDraw()
 	background();
 
 	iSetColor(r, g, b);
-	menu.display();
 	
-	//iShowBMP2(ix, iy, "images//person.bmp", -1);
+	iText(0, 0, &currentPage[0]);
+
+	if (currentPage == "homePage")
+		homePage();
+	else if (currentPage == "Credits")
+		creditPage();
 }
 
 
@@ -134,7 +165,19 @@ void iMouse(int button, int state, int mx, int my)
 	
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
+		PlaySound("Sounds\\click.wav", NULL, SND_ASYNC);
 		
+		if (currentPage == "homePage"){
+			for (int i = 0; i < totalMenuItems; i++){
+				if (menuItems[i].isInsideThis(mx, my)){
+					menuItems[i].cliked();
+					break;
+				}
+			}
+		}
+		else if (currentPage == "Credits"){
+
+		}
 	}
 	
 	
