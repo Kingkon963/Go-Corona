@@ -30,8 +30,8 @@ typedef struct MenuItem{
 	int x, y;
 	int width = 400;
 	int height = 50;
-	bool onHoverState = false;
-
+	bool onHoverState = false, firstEntry = true;
+	
 	MenuItem(){}
 	MenuItem(int x, int y, char *title) : x(x), y(y), title(title){
 
@@ -41,6 +41,8 @@ typedef struct MenuItem{
 		return (mx >= x && mx <= (x + width)) && (my >= y && my <= (y + height));
 	}
 	void display(){
+
+
 		if (this->isInsideThis( mpx, mpy )) 
 			onHoverState = true;
 		else 
@@ -50,9 +52,14 @@ typedef struct MenuItem{
 			iSetColor(0, 0, 0);
 			iFilledRectangle(x, y, width, height);
 			iSetColor(255, 255, 255);
+			if (firstEntry){
+				PlaySound("Sounds\\btn_hover.wav", NULL, SND_ASYNC);
+				firstEntry = false;
+			}
 		}
 		else{
 			iRectangle(x, y, width, height);
+			firstEntry = true;
 		}
 
 		cout << mpx << " " << mpy << endl;
@@ -71,22 +78,20 @@ struct Menu{
 	
 	int x = 0, y = 0;
 	int dy = 70, totalItems;
+	int width, height;
 	MenuItem *items;
 	
-	Menu(int x, int y, MenuItem items[], int totalItems) :x(x), y(y), totalItems(totalItems){
-
-		for (int i = 0; i < totalItems; i++){	
-			items[i].title = menuTitles[i];
-		}
+	Menu(int x, int y, int width, int height, MenuItem items[], int totalItems) :x(x), y(y), width(width), height(height), totalItems(totalItems){
 		this->items = items;
-
 	}
 	
 	void display(){
 		for (int i = 0; i < totalItems; i++){
 			items[i].x = this->x;
 			items[i].y = this->y;
-			//items[i].title = menuTitles[i];
+			items[i].width = this->width;
+			items[i].height = this->height;
+			items[i].title = menuTitles[i];
 			items[i].display();
 
 			y += dy;
@@ -94,6 +99,7 @@ struct Menu{
 		y -= dy*totalItems; // Resetting y
 	}
 };
+
 
 void background()
 {
@@ -104,7 +110,7 @@ void background()
 
 int totalMenuItems = 4;
 MenuItem menuItems[4];
-Menu menu(300, 200, menuItems, totalMenuItems);
+Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
 
 
 void homePage(){
@@ -112,7 +118,9 @@ void homePage(){
 }
 
 void creditPage(){
-
+	iShowBMP2(10, windowHeight-60, "images//home.bmp", 0);
+	//ImgButton home(10, windowHeight - 60, "images//home.bmp", "homePage");
+	//home.display();
 }
 
 void iDraw()
@@ -130,7 +138,6 @@ void iDraw()
 		homePage();
 	else if (currentPage == "Credits")
 		creditPage();
-	//iShowBMP2(ix, iy, "images//person.bmp", 0);
 }
 
 
@@ -158,11 +165,18 @@ void iMouse(int button, int state, int mx, int my)
 	
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		for (int i = 0; i < totalMenuItems; i++){
-			if (menuItems[i].isInsideThis(mx, my)){
-				menuItems[i].cliked();
-				break;
+		PlaySound("Sounds\\click.wav", NULL, SND_ASYNC);
+		
+		if (currentPage == "homePage"){
+			for (int i = 0; i < totalMenuItems; i++){
+				if (menuItems[i].isInsideThis(mx, my)){
+					menuItems[i].cliked();
+					break;
+				}
 			}
+		}
+		else if (currentPage == "Credits"){
+
 		}
 	}
 	
