@@ -1,6 +1,7 @@
 #include "iGraphics.h"
 #include <iostream>
 #include <array>
+#include <string>
 using namespace std;
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Idraw Here::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
@@ -131,77 +132,42 @@ void lifeIndicator(int life){
 	}
 };
 
-char scene[53][30] =
-{ "scene00001.bmp",
-"scene00031.bmp",
-"scene00041.bmp",
-"scene00051.bmp",
-"scene00061.bmp",
-"scene00071.bmp",
-"scene00081.bmp",
-"scene00091.bmp",
-"scene00101.bmp",
-"scene00111.bmp",
-"scene00121.bmp",
-"scene00131.bmp",
-"scene00141.bmp",
-"scene00151.bmp",
-"scene00161.bmp",
-"scene00171.bmp",
-"scene00181.bmp",
-"scene00191.bmp",
-"scene00201.bmp",
-"scene00211.bmp",
-"scene00221.bmp",
-"scene00231.bmp",
-"scene00241.bmp",
-"scene00251.bmp",
-"scene00261.bmp",
-"scene00271.bmp",
-"scene00281.bmp",
-"scene00291.bmp",
-"scene00301.bmp",
-"scene00311.bmp",
-"scene00321.bmp",
-"scene00331.bmp",
-"scene00341.bmp",
-"scene00351.bmp",
-"scene00361.bmp",
-"scene00371.bmp",
-"scene00381.bmp",
-"scene00391.bmp",
-"scene00401.bmp",
-"scene00411.bmp",
-"scene00421.bmp",
-"scene00431.bmp",
-"scene00441.bmp",
-"scene00451.bmp",
-"scene00461.bmp",
-"scene00471.bmp",
-"scene00481.bmp",
-"scene00491.bmp",
-"scene00501.bmp",
-"scene00511.bmp",
-"scene00521.bmp",
-"scene00531.bmp",
-"scene00541.bmp",
+
+char roads[4][20] =
+{
+	"images//a.bmp",
+	"images//b.bmp",
+	"images//c.bmp",
+	"images//d.bmp"
 };
+int roadIndex=3, musicOn = true;
+int vx = 442, vy = 0;
 
-int sceneIndex = 0;
 void newGame(){
-	int life = 2;
-	
+	int life = 3;
 
-	iShowBMP2(0, 0, "images//road.bmp", -1);
-	if (sceneIndex >= 20) sceneIndex = 0;
+	if (musicOn){
+		PlaySound("Sounds\\corona2.wav", NULL, SND_LOOP);
+		musicOn = false;
+	}
 
 	lifeIndicator(life);
+
+	iShowBMP2(0, 0, roads[roadIndex--], -1);
+	if (roadIndex <= 0) roadIndex = 3;
+	if (runnngIndex > 1) runnngIndex = 0;
+	iDelayMS(10);
+
 
 	iShowBMP2((windowWidth / 2) - 85, 0, person_run[runnngIndex++], 0);
 	if (runnngIndex > 1) runnngIndex = 0;
 	iDelayMS(100);
 
-	cout << sceneIndex << endl;
+	//iLine(240, 140, 442, 514);
+	vy = ((187 * vx) / 101) - (30740 / 101);
+	iShowBMP2(vx, vy, "images//virus.bmp", 255);
+	vx -= 10;
+	if (vx <= 240) vx = 442;
 }
 
 
@@ -214,6 +180,7 @@ void creditPage(){
 void iDraw()
 {
 	iClear();
+	//cout << mpx << " " << mpy << endl;
 	
 	iSetColor(0, 48, 73);
 	background();
