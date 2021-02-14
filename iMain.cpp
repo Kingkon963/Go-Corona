@@ -60,7 +60,7 @@ typedef struct MenuItem{
 			firstEntry = true;
 		}
 
-		cout << mpx << " " << mpy << endl;
+		//cout << mpx << " " << mpy << endl;
 		iText(x + getPercentage(width, 40), y + getPercentage(height, 40), title, GLUT_BITMAP_HELVETICA_18);
 	}
 
@@ -117,13 +117,91 @@ void homePage(){
 char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
 int runnngIndex = 0;
 
+void lifeIndicator(int life){
+	int dx = 50, i,j;
+	if (life >= 0 && life <= 3){
+		for (i = 0; i < life; i++){
+			iShowBMP2(windowWidth - dx, windowHeight - 50, "images//heart_filled.bmp", 0);
+			dx += 60;
+		}
+		for (j = 3-i; j ; j--){
+			iShowBMP2(windowWidth - dx, windowHeight - 50, "images//heart.bmp", 0);
+			dx += 60;
+		}
+	}
+};
+
+char scene[53][30] =
+{ "scene00001.bmp",
+"scene00031.bmp",
+"scene00041.bmp",
+"scene00051.bmp",
+"scene00061.bmp",
+"scene00071.bmp",
+"scene00081.bmp",
+"scene00091.bmp",
+"scene00101.bmp",
+"scene00111.bmp",
+"scene00121.bmp",
+"scene00131.bmp",
+"scene00141.bmp",
+"scene00151.bmp",
+"scene00161.bmp",
+"scene00171.bmp",
+"scene00181.bmp",
+"scene00191.bmp",
+"scene00201.bmp",
+"scene00211.bmp",
+"scene00221.bmp",
+"scene00231.bmp",
+"scene00241.bmp",
+"scene00251.bmp",
+"scene00261.bmp",
+"scene00271.bmp",
+"scene00281.bmp",
+"scene00291.bmp",
+"scene00301.bmp",
+"scene00311.bmp",
+"scene00321.bmp",
+"scene00331.bmp",
+"scene00341.bmp",
+"scene00351.bmp",
+"scene00361.bmp",
+"scene00371.bmp",
+"scene00381.bmp",
+"scene00391.bmp",
+"scene00401.bmp",
+"scene00411.bmp",
+"scene00421.bmp",
+"scene00431.bmp",
+"scene00441.bmp",
+"scene00451.bmp",
+"scene00461.bmp",
+"scene00471.bmp",
+"scene00481.bmp",
+"scene00491.bmp",
+"scene00501.bmp",
+"scene00511.bmp",
+"scene00521.bmp",
+"scene00531.bmp",
+"scene00541.bmp",
+};
+
+int sceneIndex = 0;
 void newGame(){
+	int life = 2;
+	
+
+	iShowBMP2(0, 0, "images//road.bmp", -1);
+	if (sceneIndex >= 20) sceneIndex = 0;
+
+	lifeIndicator(life);
+
 	iShowBMP2((windowWidth / 2) - 85, 0, person_run[runnngIndex++], 0);
 	if (runnngIndex > 1) runnngIndex = 0;
-	iDelayMS(125);
+	iDelayMS(100);
 
-	iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
-	iShowBMP2(windowWidth - 110, windowHeight - 50, "images//heart.bmp", 0);
+	cout << sceneIndex << endl;
 }
 
 
