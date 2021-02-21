@@ -106,7 +106,7 @@ void show(int a)
 	  int c = 0;
 	  int *s;
 	c = (a == 0) ? 1 : (log10(a) + 1);
-    s = (  int*)malloc(c);
+        s = (  int*)malloc(c);
 	for (int i = 0; i<c; i++){
 		h = f % 10;
 		f = f / 10;
@@ -257,7 +257,7 @@ struct Menu{
 		y -= dy*totalItems; // Resetting y
 	}
 };
-bool isScore = false;
+bool gameOver = false;
 
 void background()
 {
@@ -338,7 +338,7 @@ void newGame(){
 
 	iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
 	iShowBMP2(windowWidth - 110, windowHeight - 50, "images//heart.bmp", 0);
-	if (isScore){
+	if (gameOver){
 		setHigh(userName,point);//now for testing this function is taking score after pressing 'l',, it will take score when game over
 	}
 
@@ -513,7 +513,7 @@ void iKeyboard(unsigned char key)
 	
 	if (key == 'l')
 	{
-		isScore = true;//testing showHigh()
+		gameOver = true;//testing showHigh()
 	}
 }
 
