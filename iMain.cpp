@@ -327,7 +327,7 @@ void newGame(){
 	
 	
 	if (runnngIndex > 1) runnngIndex = 0;
-	point++;
+	
 	iDelayMS(100);
 
 	//iLine(240, 140, 442, 514);
