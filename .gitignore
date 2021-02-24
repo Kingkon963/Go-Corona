@@ -14,3 +14,4 @@ glut.h
 glut32.lib
 iGraphics.h
 stb_image.h
+Sounds/corona.wav

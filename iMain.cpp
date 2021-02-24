@@ -147,7 +147,7 @@ void newGame(){
 	int life = 3;
 
 	if (musicOn){
-		PlaySound("Sounds\\corona2.wav", NULL, SND_LOOP);
+		PlaySound("Sounds\\corona2.wav", NULL, SND_ASYNC || SND_LOOP);
 		musicOn = false;
 	}
 
@@ -215,11 +215,12 @@ void iPassiveMouseMove(int mx, int my)
 {
 	mpx = mx;
 	mpy = my;
+	cout << mx << ' ' << my << endl;
 }
 
 void iMouse(int button, int state, int mx, int my)
 {
-	
+
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
 		PlaySound("Sounds\\click.wav", NULL, SND_ASYNC);
