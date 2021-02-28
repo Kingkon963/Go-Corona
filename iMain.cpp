@@ -16,6 +16,7 @@ bool newG = false;
 bool gameOver = false;
 bool inDis = true;
 bool takeInput = false; //logic for input user name
+bool showPassiveMousePosition = true;
 //for high score
 int  point = 0;
 int flag = 0;
@@ -150,52 +151,42 @@ struct Menu{
 	}
 };
 
-struct LeftTrack{
-	double x = 442;
+
+struct Track{
+	double x1, x2, y1, y2;
+	double x, y, m;
+	Track(double x1, double y1, double x2, double y2){
+		this->x1 = x1;
+		this->y1 = y1;
+		this->x2 = x2;
+		this->y2 = y2;
+
+		this->x = x1;
+
+		this->m = (y2 - y1) / (x2 - x1);
+	}
 
 	double getX(){
-		return abs(x);
-	}
-	double getY(){
-		return abs(((187 * x) / 101) - (30740 / 101));
-	}
-
-	void speed(double dx){
-		x -= dx;
-		if (x <= 240) x = 442;
-	}
-};
-
-struct MiddleTrack{
-	double x = 512;
-
-	double getX(){
-		return abs(x);
+		return x;
 	}
 
 	double getY(){
-		return abs((191 * x) - 97268);
+		return abs(m*(x - x1) + y1);
 	}
 
 	void speed(double dx){
-		x -= dx;
-		if (x <= 510) x = 512;
-	}
-};
-struct RightTrack{
-	double x = 581;
-
-	double getX(){
-		return abs(x);
-	}
-
-	double getY(){
-		return abs(((373*x)/(-181))+(216713/181)+515);
-	}
-
-	void speed(double dx){
-		x += dx;
-		if (x >= 762) x = 581;
+		if (x1 > x2){
+			x -= dx;
+			if (x <= x2) x = x1;
+		}
+		else if (x1 < x2){
+			x += dx;
+			if (x >= x2) x = x1;
+		}
+		else{
+			cout << "Slope is Zero!" << endl;
+		}
+		
 	}
 };
 
@@ -206,9 +197,10 @@ struct Virus{
 
 MenuItem menuItems[5];
 Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
-LeftTrack lt;
-MiddleTrack mt;
-RightTrack rt;
+
+Track lt(442, 514, 190, 16);
+Track mt(490, 517, 500, 16);
+Track rt(520, 514, 190, 16);
 
 void setHigh(char* player, long int b) {
 	int u;
@@ -407,7 +399,7 @@ void newGame(){
 
 		iShowBMP2(charecterX, charecterY + jumpY, "images//b14.bmp", 0);
 		jumpY += 20;
-		//iDelayMS(60);
+
 		if (jumpY > 80)
 		{
 			jump = false;
@@ -425,14 +417,17 @@ void newGame(){
 	//vy = ((187 * vx) / 101) - (30740 / 101);
 	
 	//cout << lt.getY() << endl;
+	/*iShowBMP2(lt.getX(), lt.getY(), "images//virus.bmp", 255);
+	lt.speed(1);*/
 	iShowBMP2(lt.getX(), lt.getY(), "images//virus.bmp", 255);
 	lt.speed(1);
 
-	iShowBMP2(mt.getX()-10, mt.getY()-7, "images//virus.bmp", 255);
-	mt.speed(.012);
 
-	cout << rt.getY() << endl;
-	iShowBMP2(rt.getX() - 10, rt.getY() - 7, "images//virus.bmp", 255);
+	iShowBMP2(mt.getX(), mt.getY(), "images//virus.bmp", 255);
+	mt.speed(.1);
+
+
+	iShowBMP2(rt.getX(), rt.getY(), "images//virus.bmp", 255);
 	rt.speed(1);
 
 	iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
@@ -538,6 +533,7 @@ void iPassiveMouseMove(int mx, int my)
 {
 	mpx = mx;
 	mpy = my;
+	if (showPassiveMousePosition)
 	cout << mpx << ' ' << mpy << endl;
 }
 
