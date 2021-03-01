@@ -17,7 +17,7 @@ bool gameOver = false;
 bool inDis = true;
 bool takeInput = true; //logic for input user name
 //for high score
-int  point = 0;
+long int  point = 0;
 int flag = 0;
 int movec = (windowWidth / 2) - 85;
 char* hoverImg[5] = { "images//help1.bmp", "images//hover4.bmp", "images//hover3.bmp", "images//hover2.bmp", "images//hover1.bmp" };
@@ -65,14 +65,14 @@ int max_jumpY = 100;
 
 void setHigh(char*, long int);
 void showhigh();
-void show(int);
+void show(long int);
 int getPercentage(int, int);
 void background();
 void homepage();
 void lifeIndicator(int);
 void run();
 void moveRoad();
-char *convertInt(int);
+void convertInt(char str[], long int a);
 int lineCount();
 void rankScore();
 
@@ -209,7 +209,7 @@ struct Virus{
 
 struct playerData{
 	char pl[1000];
-	int scr;
+	long int scr;
 };
 
 
@@ -219,33 +219,19 @@ LeftTrack lt;
 MiddleTrack mt;
 RightTrack rt;
 
-char *convertInt(int a){
-	int h;
-    int f = a;
-    int c = 0;
-    int *s;
-    c = (a == 0) ? 1 : (log10(a) + 1);
-    s = (int*)malloc(c);
-    for (int i = 0; i<c; i++){
-        h = f % 10;
-        f = f / 10;
-        s[i] = h;
-    }
-    int*t;
-    t = (int*)malloc(c);
-    for (int i = 0; i< c; i++){
-        t[i] = s[(c - 1) - i];
-
-
-    }
-    char *p;
-    p = (char*)malloc(c);
-    for (int i = 0; i< c; i++){
-        p[i] = (char)(t[i] + 48);
-    }
-
-    return p;
-
+void convertInt(char str[], long int a) {
+	long int i, rem, count = 0, f;
+	f = a;
+	while (f != 0) {
+		count++;
+		f /= 10;
+	}
+	for (i = 0; i < count; i++) {
+		rem = a % 10;
+		a = a / 10;
+		str[count - (i + 1)] = rem + '0';
+	}
+	str[count] = '\0';
 }
 
 int lineCount(){
@@ -290,7 +276,7 @@ void rankScore(){
 
 	for (int i = 0; i < k - 1; i++) {
 		fprintf(n, "%s\t", x[i].pl);
-		fprintf(n, "%d\n", x[i].scr);
+		fprintf(n, "%ld\n", x[i].scr);
 	}
 	free(x);
 	fclose(n);
@@ -321,7 +307,7 @@ void setHigh(char* player, long int scr) {
 	}
 	if (newFile == false && gameOver == true){
 		g = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "a+");
-		fprintf(g, " %s %d \n", plr.pl, plr.scr);
+		fprintf(g, " %s %ld \n", plr.pl, plr.scr);
 
 		fclose(g);
 
@@ -329,9 +315,9 @@ void setHigh(char* player, long int scr) {
 	else if (newFile == true && gameOver == true) {
 		struct playerData f[10];
 		g = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "w+");
-		fprintf(g, " %s %d \n", plr.pl, plr.scr);
+		fprintf(g, " %s %ld \n", plr.pl, plr.scr);
 		for (i = 0; i < 10; i++){
-			fprintf(g, " %s %d \n", "Unknown", 0);
+			fprintf(g, " %s %ld \n", "Unknown", 0);
 		}
 		newFile = false;
 		fclose(g);
@@ -354,14 +340,14 @@ void showHigh(){
 		int i = 0;
 		int scr;
 		char pl[1000];
-		char *p;
-		char *v;
+		char p[1000];
+		char v[20];
 		if (a != NULL) {
-			while (fscanf(a, "%s %d", pl, &scr) != EOF) {
+			while (fscanf(a, "%s %ld", pl, &scr) != EOF) {
 				if (count < 10) {
 
 					iText(300, 450 - i, pl, GLUT_BITMAP_TIMES_ROMAN_24);
-					p = convertInt(scr);
+					convertInt(p,scr);
 					iText(600, 450 - i, p, GLUT_BITMAP_TIMES_ROMAN_24);
 
 				}
@@ -373,39 +359,32 @@ void showHigh(){
 				}
 				count++;
 				i += 40;
-				v = convertInt(count);
+				convertInt(v,count);
 				iText(250, 490 - i, v, GLUT_BITMAP_TIMES_ROMAN_24);
 
 
 			}
 			fclose(a);
-			free(p);
-			free(v);
+			
 		}
 	}
 }
-void show(int a)
+void show(long int a)
 {
-	int h;
-	int f = a;
-	int c = 0;
-	int *s;
-	c = (a == 0) ? 1 : (log10(a) + 1);
-	s = (int*)malloc(c);
-	for (int i = 0; i<c; i++){
-		h = f % 10;
-		f = f / 10;
-		s[i] = h;
-
+	char p[1000];
+	long int i, rem, count = 0, f;
+	f = a;
+	while (f != 0) {
+		count++;
+		f /= 10;
 	}
-	int*t;
-	t = (int*)malloc(c);
-	for (int i = 0; i< c; i++){
-		t[i] = s[(c - 1) - i];
+	for (i = 0; i < count; i++) {
+		rem = a % 10;
+		a = a / 10;
+		p[count - (i + 1)] = rem + '0';
 	}
-	char p[100];
-	for (int i = 0; i< c; i++){
-		p[i] = (char)(t[i] + 48);
+	p[count] = '\0';
+	for (int i = 0; i< count; i++){
 		if (p[i] == '0'){
 			iShowBMP2((400 + (i * 25)), 670, "images//0.bmp", 0);
 		}
