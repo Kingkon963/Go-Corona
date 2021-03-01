@@ -1,0 +1,17 @@
+Debug/
+GLU32.LIB
+GLUT32.DLL
+Glaux.lib
+OPENGL32.LIB
+Project1.vcxproj
+Project1.vcxproj.filters
+bitmap_loader.h
+glaux.h
+glui32.lib
+glut.h
+glut32.lib
+GAME.vcxproj
+GAME.vcxproj.filters
+iGraphics.h
+stb_image.h
+Sounds/corona.wav
