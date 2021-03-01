@@ -39,7 +39,7 @@ int ix = 0, iy = 0;
 
 int mpx, mpy, count = 0;
 
-string currentPage = "homePage";
+string currentPage = "newGame";
 
 char* menuTitles2[5] = { "help", "credits", "highScores", "settings", "newGame" };
 char* menuTitles[5] = { "images//help.bmp", "images//menu4.bmp", "images//menu3.bmp", "images//menu2.bmp", "images//menu1.bmp" };
@@ -73,6 +73,7 @@ void homepage();
 void lifeIndicator(int);
 void run();
 void moveRoad();
+void sun();
 
 
 struct MenuItem{
@@ -192,6 +193,8 @@ struct Track{
 
 struct Virus{
 	string type;
+	Track path;
+
 };
 
 
@@ -374,20 +377,28 @@ void moveRoad(){
 	roadIndex--;
 	if (roadIndex <= 0) roadIndex = 3;
 }
+void sun(){
+	iSetColor(247, 127, 0);
+	iFilledCircle(161, 527, 50, 100);
+}
+
 void newGame(){
 	int life = 3;
 
+	iText(10, windowHeight - 30, userName, GLUT_BITMAP_TIMES_ROMAN_24);
+	iShowBMP(0, 524, "images/sky.bmp");
+	sun();
 	iShowBMP2(0, 0, roads[roadIndex], -1);
+
+	iShowBMP2(lt.getX(), lt.getY(), "images//virus.bmp", 255);
+	lt.speed(1);
+
+	iShowBMP2(mt.getX(), mt.getY(), "images//virus.bmp", 255);
+	mt.speed(.1);
+
+	iShowBMP2(rt.getX(), rt.getY(), "images//virus.bmp", 255);
+	rt.speed(1);
 	
-
-	//if (musicOn){
-	//	PlaySound("Sounds\\normal.wav", NULL, SND_LOOP);
-	//	musicOn = false;
-	//}
-	iText(10, windowHeight - 30 , userName, GLUT_BITMAP_TIMES_ROMAN_24);
-
-	//iDelayMS(10);
-
 	if (!jump)
 	{
 		iShowBMP2(charecterX, charecterY, person_run[runningIndex], 0);
@@ -410,25 +421,9 @@ void newGame(){
 
 	}
 
-	//iLine(240, 140, 442, 514);
 	point++;// SHOULD BE CHANGED
 	show(point);// Showing int on screen
 
-	//vy = ((187 * vx) / 101) - (30740 / 101);
-	
-	//cout << lt.getY() << endl;
-	/*iShowBMP2(lt.getX(), lt.getY(), "images//virus.bmp", 255);
-	lt.speed(1);*/
-	iShowBMP2(lt.getX(), lt.getY(), "images//virus.bmp", 255);
-	lt.speed(1);
-
-
-	iShowBMP2(mt.getX(), mt.getY(), "images//virus.bmp", 255);
-	mt.speed(.1);
-
-
-	iShowBMP2(rt.getX(), rt.getY(), "images//virus.bmp", 255);
-	rt.speed(1);
 
 	iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
 	iShowBMP2(windowWidth - 110, windowHeight - 50, "images//heart.bmp", 0);
