@@ -62,6 +62,11 @@ int charecterY = 10;
 bool jump = false;
 int jumpY = 10;
 int max_jumpY = 100;
+int scrollY = 200;
+int scrollAutoY = 200;
+int cloudX = 0;
+int cloudX1 = 0;
+int cloudX2 = 0;
 
 void setHigh(char*, long int);
 void showhigh();
@@ -72,7 +77,7 @@ void homepage();
 void lifeIndicator(int);
 void run();
 void moveRoad();
-void convertInt(char str[], long int a);
+void convertInt(char , long int);
 int lineCount();
 void rankScore();
 
@@ -218,6 +223,9 @@ Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
 LeftTrack lt;
 MiddleTrack mt;
 RightTrack rt;
+
+
+
 
 void convertInt(char str[], long int a) {
 	long int i, rem, count = 0, f;
@@ -434,6 +442,7 @@ void homePage(){
 	menu.display();
 
 }
+
 void lifeIndicator(int life){
 	int dx = 50, i, j;
 	if (life >= 0 && life <= 3){
@@ -459,10 +468,9 @@ void moveRoad(){
 }
 void newGame(){
 	int life = 3;
-
+  
 	iShowBMP2(0, 0, roads[roadIndex], -1);
-
-
+	
 	//if (musicOn){
 	//	PlaySound("Sounds\\normal.wav", NULL, SND_LOOP);
 	//	musicOn = false;
@@ -544,11 +552,29 @@ void helpPage(){
 	/*
 	write insructions, rules here.
 	*/
+	iText(250, scrollY, "write insructions, rules here.", GLUT_BITMAP_TIMES_ROMAN_24);
 	iShowBMP2(10, 10, "images//home.bmp", 0);
 }
+int sd = 0;
 void creditPage(){
-	iShowBMP2(400, 600, "images//credits.bmp", 0);
+	iShowBMP(0, 0, "images//creditBack.bmp");
+	iShowBMP2(400, 600+sd, "images//credits.bmp", 0);
+	
+	iText(300, 550+sd, "Md.Naimul Islam Kingkon", GLUT_BITMAP_TIMES_ROMAN_24);
+	iText(300, 400 + sd, "Md.Akib Hasan", GLUT_BITMAP_TIMES_ROMAN_24);
+	iText(300, 250 + sd, "Rafid Reezwan Fahim", GLUT_BITMAP_TIMES_ROMAN_24);
+	iText(300, 100 + sd, "Md.Muhaiminul Kabir", GLUT_BITMAP_TIMES_ROMAN_24);
+
+	iText(300, 525 + sd, "ID- 190204081", GLUT_BITMAP_TIMES_ROMAN_24);
+	iText(300, 375 + sd, "ID- 190204074", GLUT_BITMAP_TIMES_ROMAN_24);
+	iText(300, 225 + sd, "ID- 190204082", GLUT_BITMAP_TIMES_ROMAN_24);
+	iText(300, 75 + sd, "ID- 190204063", GLUT_BITMAP_TIMES_ROMAN_24);
+	iDelayMS(10);
+	sd++;
+	
 	iShowBMP2(10, 10, "images//home.bmp", 0);
+	
+	
 	//ImgButton home(10, windowHeight - 60, "images//home.bmp", "homePage");
 	//home.display();
 }
@@ -582,7 +608,7 @@ void iDraw()
 	else if (currentPage == "userPage"){
 		userPage();
 	}
-	else if (currentPage == "credit"){
+	else if (currentPage == "credits"){
 		creditPage();
 	}
 	else if (currentPage == "highScores"){
@@ -734,12 +760,18 @@ void iSpecialKeyboard(unsigned char key)
 		}
 	}
 
+	if (currentPage == "help"){
+		if (key == GLUT_KEY_UP){
+			scrollY+=25;
+		}
+	}
 
 }
 
 
 int main()
 {
+	
 	int runTimer = iSetTimer(100, run);
 	int roadTimer = iSetTimer(100, moveRoad);
 	///srand((unsigned)time(NULL));
