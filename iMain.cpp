@@ -199,7 +199,7 @@ struct Virus{
 MenuItem menuItems[5];
 Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
 char virusX[5][20] = { "images//virus8.bmp", "images//virus9.bmp", "images//virus10.bmp", "images//virus11.bmp", "images//virus12.bmp" };
-Track lt(440, 516, 190, 16);
+Track lt(440, 516, 170, 16);
 Track mt(490, 516, 500, 16);
 Track rt(540, 520, 800, 16);
 void showLtVirus(){
@@ -732,18 +732,18 @@ void iSpecialKeyboard(unsigned char key)
 		}
 	}
 	else if (currentPage == "newGame"){
-		if (key == GLUT_KEY_RIGHT)
+		if (key == GLUT_KEY_F2)
 		{
-			charecterX += 40;
-			if (charecterX > 895)
-				charecterX = 895;
+			charecterX += 285;
+			if (charecterX > 720)
+				charecterX = 720;
 
 		}
-		if (key == GLUT_KEY_LEFT)
+		if (key == GLUT_KEY_F1)
 		{
-			charecterX -= 40;
-			if (charecterX < 80)
-				charecterX = 80;
+			charecterX -= 285;
+			if (charecterX < 150)
+				charecterX = 150;
 
 		}
 		if (key == GLUT_KEY_UP){
