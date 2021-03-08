@@ -18,6 +18,14 @@ bool inDis = true;
 bool takeInput = true; //logic for input user name
 bool takeScore = false;
 bool showPassiveMousePosition = true;
+bool optionMusicOff = false;
+bool optionMusicOn = true;
+bool optionDifficulityHigh = false;
+bool optionDifficulityLow = true;
+bool optionDifficulityMedium = false;
+
+
+
 //for high score
 long int  point = 0;
 int flag = 0;
@@ -58,10 +66,12 @@ char roads[4][20] =
 };
 
 char *gameOverImg[3] = { "images//gameO5.bmp", "images//gameO2.bmp", "images//gameO1.bmp" };
-
-
+char *musicState[2] = { "ON", "OFF" };
+char *difficulityState[3] = { "LOW", "MEDIUM", "HIGH" };
 
 int gameOverIndex = 0;
+int musicStateIndex = 0;
+int difficulityStateIndex = 0;
 int roadIndex = 3;
 bool musicOn = true;
 //int vx = 442, vy = 0;
@@ -71,6 +81,7 @@ bool jump = false;
 int jumpY = 10;
 int max_jumpY = 100;
 int scrollY = 0;
+int scrollSettingsY = 0;
 int universalScoreVar = 0;
 
 
@@ -565,8 +576,9 @@ void moveRoad(){
 }
 
 void gameOverPage(){
-
-	char p[100];
+	point = 0;
+	takeInput = true;
+	        char p[100];
 			iShowBMP(0, 0, gameOverImg[gameOverIndex]);
 			gameOverIndex++;
 			iDelayMS(100);
@@ -577,13 +589,22 @@ void gameOverPage(){
 			convertInt(p, universalScoreVar);
 			iText(690, 210,p, GLUT_BITMAP_TIMES_ROMAN_24);
 			iText(265, 70, "PRESS ANY KEY TO RETURN HOME", GLUT_BITMAP_TIMES_ROMAN_24);
+			gameOver = false;
 }
 
 void newGame(){
 	int life = 3;
   
 	iShowBMP2(0, 0, roads[roadIndex], -1);
-	
+	if (optionDifficulityMedium){
+		iText(10, windowHeight - 55, "Medium", GLUT_BITMAP_TIMES_ROMAN_24);
+	}
+	else if (optionDifficulityLow){
+		iText(10, windowHeight - 55, "Low", GLUT_BITMAP_TIMES_ROMAN_24);
+	}
+	else if (optionDifficulityHigh){
+		iText(10, windowHeight - 55, "hard", GLUT_BITMAP_TIMES_ROMAN_24);
+	}
 	//if (musicOn){
 	//	PlaySound("Sounds\\normal.wav", NULL, SND_LOOP);
 	//	musicOn = false;
@@ -635,7 +656,7 @@ void newGame(){
 	if (gameOver){
 		takeScore = true;
 	}
-	if (takeScore){
+    if (takeScore){
 		universalScoreVar = point;
 		setHigh(userName, point);//now for testing this function is taking score after pressing 'l',, it will take score when game over
 		takeScore = false;
@@ -654,6 +675,7 @@ void userPage(){
 	iText(180, 360, ">>", GLUT_BITMAP_TIMES_ROMAN_24);
 	iShowBMP2(200, 100, "images//13.bmp", 0);
 	iSetColor(255, 0, 0);
+	
 	iText(250, 360, userName, GLUT_BITMAP_TIMES_ROMAN_24);
 
 
@@ -665,8 +687,37 @@ void highScores(){
 	iShowBMP2(10, 10, "images//home.bmp", 0);
 }
 void settings(){
+
+	iText(260, 575, "Music", GLUT_BITMAP_TIMES_ROMAN_24);
+	iText(260, 475, "Difficulity", GLUT_BITMAP_TIMES_ROMAN_24);
+	
+	if (scrollSettingsY == 0 && optionMusicOn == true){
+		iText(470, 575, "ON", GLUT_BITMAP_TIMES_ROMAN_24);
+		musicStateIndex = 0;
+	}
+	else if (scrollSettingsY == 0 && optionMusicOff == true){
+		iText(470, 575, "OFF", GLUT_BITMAP_TIMES_ROMAN_24);
+		musicStateIndex = 1;
+	}
+	else if (scrollSettingsY == 100 && optionDifficulityHigh == true){
+		iText(470, 475, "HIGH", GLUT_BITMAP_TIMES_ROMAN_24);
+		difficulityStateIndex = 2;
+	}
+	else if (scrollSettingsY == 100 && optionDifficulityLow == true){
+		iText(470, 475, "LOW", GLUT_BITMAP_TIMES_ROMAN_24);
+		difficulityStateIndex = 0;
+	}
+	else if (scrollSettingsY == 100 && optionDifficulityMedium == true){
+		iText(470, 475, "MEDIUM", GLUT_BITMAP_TIMES_ROMAN_24);
+		difficulityStateIndex = 1;
+	}
+
+    iRectangle(470, 565- scrollSettingsY, 200, 50);
+	iText(470, 575, musicState[musicStateIndex], GLUT_BITMAP_TIMES_ROMAN_24);
+	iText(470, 475, difficulityState[difficulityStateIndex], GLUT_BITMAP_TIMES_ROMAN_24);
+	iText(300, 275, "PRESS ARROW KEYS TO NAVIGATE", GLUT_BITMAP_TIMES_ROMAN_24);
 	//iShowBMP2(370, 600, "images//22.bmp", 0);
-	//iShowBMP2(10, 10, "images//home.bmp", 0);
+	iShowBMP2(10, 10, "images//home.bmp", 0);
 }
 void helpPage(){
 	/*
@@ -791,7 +842,9 @@ void iMouse(int button, int state, int mx, int my)
 		else if (currentPage != "newGame" || currentPage != "homePage"){
 			if (mx < 100 && my < 100){
 				iShowBMP2(mpx, mpy, "images//home_black.bmp", 255);
-				currentPage = "homePage";	
+				currentPage = "homePage";
+				scrollY = 0;
+				scrollSettingsY = 0;
 			}
 		}
 	}
@@ -800,6 +853,7 @@ void iMouse(int button, int state, int mx, int my)
 
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
 	{
+		 
 	}
 }
 
@@ -819,7 +873,7 @@ void iKeyboard(unsigned char key){
 
 		}
 
-		else{
+		else if(key == '\b'){
 			if (index0 <= 0){
 				index0 = 0;
 			}
@@ -828,6 +882,7 @@ void iKeyboard(unsigned char key){
 			}
 			userName[index0] = '\0';
 		}
+		
 
 
 	}
@@ -900,13 +955,84 @@ void iSpecialKeyboard(unsigned char key)
 		}
 	}
 
-	if (currentPage == "help"){
+	else if (currentPage == "help"){
 		if (key == GLUT_KEY_UP){
 			scrollY-=25;
 		}
 		if (key == GLUT_KEY_DOWN){
 			scrollY += 25;
 		}
+	}
+	if (currentPage == "settings"){
+		if (key == GLUT_KEY_UP){
+			scrollSettingsY -= 100;
+			if (scrollSettingsY < 0){
+				scrollSettingsY = 100;
+			}
+			
+		}
+		else if (key == GLUT_KEY_DOWN){
+			scrollSettingsY += 100;
+			if (scrollSettingsY > 100){
+				scrollSettingsY = 0;
+			}
+		}
+		else if (key == GLUT_KEY_RIGHT && scrollSettingsY == 0){
+			if (optionMusicOn){
+				optionMusicOff = true;
+				optionMusicOn = false;
+			}
+			else if (optionMusicOff){
+				optionMusicOff = false;
+				optionMusicOn = true;
+			}
+		}
+		else if (key == GLUT_KEY_LEFT && scrollSettingsY == 0){
+			if (optionMusicOn){
+				optionMusicOff = true;
+				optionMusicOn = false;
+			}
+			else if (optionMusicOff){
+				optionMusicOff = false;
+				optionMusicOn = true;
+			}
+		}
+		if (key == GLUT_KEY_RIGHT && scrollSettingsY == 100){
+			
+			if (optionDifficulityLow){
+				optionDifficulityLow = false;
+				optionDifficulityMedium = true;
+				optionDifficulityHigh = false;
+			}
+			else if (optionDifficulityMedium){
+				optionDifficulityLow = false;
+				optionDifficulityMedium = false;
+				optionDifficulityHigh = true;
+			}
+			else if (optionDifficulityHigh){
+				optionDifficulityLow = true;
+				optionDifficulityMedium = false;
+				optionDifficulityHigh = false;
+			}
+		}
+		if (key == GLUT_KEY_LEFT && scrollSettingsY == 100){
+			if (optionDifficulityMedium){
+				optionDifficulityLow = true;
+				optionDifficulityMedium = false;
+				optionDifficulityHigh = false;
+			}
+			else if (optionDifficulityLow){
+				optionDifficulityLow = false;
+				optionDifficulityMedium = false;
+				optionDifficulityHigh = true;
+			}
+			else if (optionDifficulityHigh){
+				optionDifficulityLow = false;
+				optionDifficulityMedium = true;
+				optionDifficulityHigh = false;
+			}
+		}
+		
 	}
 
 	if (currentPage != "homePage"){
