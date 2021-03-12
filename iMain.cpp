@@ -5,18 +5,21 @@
 #include <array>
 #include <string>
 #include<windows.h>
+#include <time.h>
 using namespace std;
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Idraw Here::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
 #define windowWidth 1020
 #define windowHeight 720
 #define GH 1 ///////// for high score////////////
+#define Y1 264
+#define Y2 416
 bool skip = false;
 bool newG = false;
 bool gameOver = false;
 bool inDis = true;
 bool takeInput = false; //logic for input user name
-bool showPassiveMousePosition = true;
+bool showPassiveMousePosition = false;
 //for high score
 int  point = 0;
 int flag = 0;
@@ -63,6 +66,7 @@ int charecterY = 10;
 bool jump = false;
 int jumpY = 10;
 int max_jumpY = 100;
+int virusImg, virusImg75, virusImg100;
 
 void setHigh(char*, long int);
 void showhigh();
@@ -74,6 +78,8 @@ void lifeIndicator(int);
 void run();
 void moveRoad();
 void sun();
+void loadImages();
+void virusFactory();
 
 
 struct MenuItem{
@@ -192,9 +198,34 @@ struct Track{
 };
 
 struct Virus{
-	string type;
-	Track path;
+	//string type;
+	int image;
+	Track track;
+	int size = 50;
 
+	
+	Virus(Track track) : track(track){
+
+	}
+	void spawn(double speed){
+		//cout << "Y: " << track.getY() << " Size: " << size << endl;
+		setVirusSize();
+		iShowImage(track.getX(), track.getY(), size, size, image);
+		track.speed(speed);
+		if (track.getY() > Y2) size = 50;
+		else if (track.getY() < Y2 && track.getY() > Y1) size = 75;
+		else if (track.getY() < Y1) size = 100;
+	}
+
+	void setVirusSize(){
+		if (size == 50) image = virusImg;
+		else if (size == 75) image = virusImg75;
+		else if (size == 100) image = virusImg100;
+		else{
+			cout << "Invalid Virus Size" << endl;
+			exit(1);
+		}
+	}
 };
 
 
@@ -202,9 +233,16 @@ MenuItem menuItems[5];
 Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
 
 Track lt(442, 514, 190, 16);
-Track mt(490, 517, 500, 16);
-Track rt(520, 514, 190, 16);
+Track mt(490, 517, 450, 16);
+Track rt(538, 508, 710, 16);
 
+Virus v1(lt);
+
+void loadImages(){
+	virusImg = iLoadImage("images/virus.png");
+	virusImg75 = iLoadImage("images/virus75.png");
+	virusImg100 = iLoadImage("images/virus100.png");
+}
 void setHigh(char* player, long int b) {
 	int u;
 	long int y;
@@ -381,24 +419,22 @@ void sun(){
 	iSetColor(247, 127, 0);
 	iFilledCircle(161, 527, 50, 100);
 }
+void virusFactory(){
+
+}
+
 
 void newGame(){
 	int life = 3;
-
-	iText(10, windowHeight - 30, userName, GLUT_BITMAP_TIMES_ROMAN_24);
+	cout << rand() << endl;
 	iShowBMP(0, 524, "images/sky.bmp");
+	iText(10, windowHeight - 30, userName, GLUT_BITMAP_TIMES_ROMAN_24);
+	
 	sun();
 	iShowBMP2(0, 0, roads[roadIndex], -1);
 
-	iShowBMP2(lt.getX(), lt.getY(), "images//virus.bmp", 255);
-	lt.speed(1);
+	v1.spawn(.5);
 
-	iShowBMP2(mt.getX(), mt.getY(), "images//virus.bmp", 255);
-	mt.speed(.1);
-
-	iShowBMP2(rt.getX(), rt.getY(), "images//virus.bmp", 255);
-	rt.speed(1);
-	
 	if (!jump)
 	{
 		iShowBMP2(charecterX, charecterY, person_run[runningIndex], 0);
@@ -416,8 +452,6 @@ void newGame(){
 			jump = false;
 			jumpY = 0;
 		}
-
-
 
 	}
 
@@ -656,9 +690,10 @@ int main()
 {
 	int runTimer = iSetTimer(100, run);
 	int roadTimer = iSetTimer(100, moveRoad);
-	///srand((unsigned)time(NULL));
+	srand((unsigned)time(NULL));
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations
+	loadImages();
 	iStart();
 	return 0;
 }
