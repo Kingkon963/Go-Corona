@@ -834,6 +834,20 @@ void helpPage(){
 	iShowBMP2(10, 10, "images//home.bmp", 0);
 }
 
+
+char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
+int runnngIndex = 0;
+
+void newGame(){
+	iShowBMP2((windowWidth / 2) - 85, 0, person_run[runnngIndex++], 0);
+	if (runnngIndex > 1) runnngIndex = 0;
+	iDelayMS(125);
+
+	iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
+	iShowBMP2(windowWidth - 110, windowHeight - 50, "images//heart.bmp", 0);
+}
+
+
 void creditPage(){
 	iShowBMP(0, 0, "images//creditBack.bmp");
 	iShowBMP2(200, 650, "images//credits.bmp", 0);
@@ -866,7 +880,6 @@ void creditPage(){
 void iDraw()
 {
 	iClear();
-
 	iSetColor(0, 48, 73);
 	background();
 
