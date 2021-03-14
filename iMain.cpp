@@ -69,6 +69,7 @@ bool jump = false;
 int jumpY = 10;
 int max_jumpY = 100;
 int virusImg, virusImg75, virusImg100;
+int toonBoy;
 //int virusIndex = 0;
 int randomTrack, prevTrack = -1;
 /*vector<int> activeViruses;
@@ -247,9 +248,9 @@ struct Virus{
 MenuItem menuItems[5];
 Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
 
-Track lt(442, 514, 190, 16);
-Track mt(490, 517, 450, 16);
-Track rt(538, 508, 710, 16);
+Track lt(442, 514, 190, 0);
+Track mt(490, 517, 450, 0);
+Track rt(538, 508, 710, 0);
 
 Virus virus;
 list<Virus> activeViruses;
@@ -260,6 +261,8 @@ void loadImages(){
 	virusImg = iLoadImage("images/virus.png");
 	virusImg75 = iLoadImage("images/virus75.png");
 	virusImg100 = iLoadImage("images/virus100.png");
+
+	toonBoy = iLoadImage("images/toonBoy/1.png");
 }
 void setHigh(char* player, long int b) {
 	int u;
@@ -717,15 +720,15 @@ void iSpecialKeyboard(unsigned char key)
 		if (key == GLUT_KEY_RIGHT)
 		{
 			charecterX += 40;
-			if (charecterX > 895)
-				charecterX = 895;
+			if (charecterX > 710)
+				charecterX = 710;
 
 		}
 		if (key == GLUT_KEY_LEFT)
 		{
 			charecterX -= 40;
-			if (charecterX < 80)
-				charecterX = 80;
+			if (charecterX < 190)
+				charecterX = 190;
 
 		}
 		if (key == GLUT_KEY_UP){
