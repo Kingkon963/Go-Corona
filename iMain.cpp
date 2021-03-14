@@ -4,7 +4,8 @@
 #include <iostream>
 #include <array>
 #include <string>
-#include <vector>
+//#include <vector>
+#include <list>
 #include<windows.h>
 #include <time.h>
 using namespace std;
@@ -68,9 +69,11 @@ bool jump = false;
 int jumpY = 10;
 int max_jumpY = 100;
 int virusImg, virusImg75, virusImg100;
-int virusIndex = 0;
-vector<int> activeViruses;
-vector<int>::iterator virusIterator;
+//int virusIndex = 0;
+int randomTrack, prevTrack = -1;
+/*vector<int> activeViruses;
+vector<int>::iterator virusIterator;*/
+
 
 void setHigh(char*, long int);
 void showhigh();
@@ -204,19 +207,18 @@ struct Track{
 };
 
 struct Virus{
-	//string type;
 	int image;
 	Track track;
-	int size = 50;
-	double speed = 1;
-	bool hide = false;
+	int size;
+	double speed;
+	bool hide;
 
-	Virus(){}
-	//Virus(Track track) : track(track){
-
-	//}
+	Virus(){
+		hide = false;
+		speed = 1;
+		size = 50;
+	}
 	void spawn(){
-		//cout << "Y: " << track.getY() << " Size: " << size << endl;
 		if (!hide){
 			setVirusSize();
 			iShowImage(track.getX(), track.getY(), size, size, image);
@@ -249,7 +251,10 @@ Track lt(442, 514, 190, 16);
 Track mt(490, 517, 450, 16);
 Track rt(538, 508, 710, 16);
 
-Virus viruses[100];
+Virus virus;
+list<Virus> activeViruses;
+
+
 
 void loadImages(){
 	virusImg = iLoadImage("images/virus.png");
@@ -434,28 +439,34 @@ void sun(){
 }
 void virusFactory(){
 	int randomTrack = rand() % 3;
+	while (randomTrack == prevTrack) randomTrack = rand() % 3;
 	
 	switch (randomTrack){
 	case 0:
-		viruses[virusIndex].track = lt;
-		viruses[virusIndex].speed = 1.5;
+		virus.track = lt;
+		virus.speed = 1.5;
+		prevTrack = 0;
 		break;
 	case 1:
-		viruses[virusIndex].track = mt;
-		viruses[virusIndex].speed = .3;
+		virus.track = mt;
+		virus.speed = .3;
+		prevTrack = 1;
 		break;
 	case 2:
-		viruses[virusIndex].track = rt;
-		viruses[virusIndex].speed = 1;
+		virus.track = rt;
+		virus.speed = 1;
+		prevTrack = 2;
 		break;
 	default:
 		cout << "Error in generating randomTrack" << endl;
 	}
 
-	activeViruses.push_back(virusIndex);
+	cout << virus.hide << endl;
+	activeViruses.push_back(virus);
 
-	virusIndex++;
-	if (virusIndex >= 100) virusIndex = 0;
+	if (activeViruses.size() == 10) { 
+		activeViruses.pop_front();
+	}
 }
 
 
@@ -468,20 +479,13 @@ void newGame(){
 	sun();
 	iShowBMP2(0, 0, roads[roadIndex], -1);
 
-	cout << activeViruses.size() << endl;
-	cout << activeViruses.size() << endl;
 	if (!activeViruses.empty()){
-		for (auto i : activeViruses ){
-			viruses[i].spawn();
+		for (list<Virus>::iterator virus = activeViruses.begin(); virus != activeViruses.end(); virus++){
+			virus->spawn();
 		}
-		//viruses[0].spawn();
-		//viruses[1].spawn();
-		//viruses[2].spawn();
-		//viruses[3].spawn();
 	}
 
 	
-
 	if (!jump)
 	{
 		iShowBMP2(charecterX, charecterY, person_run[runningIndex], 0);
@@ -551,7 +555,7 @@ void creditPage(){
 void iDraw()
 {
 	iClear();
-
+	
 	iSetColor(0, 48, 73);
 	background();
 
@@ -618,7 +622,8 @@ void iMouse(int button, int state, int mx, int my)
 
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		PlaySound("Sounds\\click.wav", NULL, SND_ASYNC);
+		PlaySound("Sounds\\click.wav", NULL, SND_SYNC);
+		
 
 		if (currentPage == "homePage"){
 			for (int i = 0; i < totalMenuItems; i++){
