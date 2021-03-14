@@ -15,3 +15,5 @@ glut32.lib
 iGraphics.h
 stb_image.h
 .lib
+Project1.vcxproj
+Project1.vcxproj.filters
