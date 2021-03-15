@@ -1,4 +1,3 @@
-//testing
 #define _CRT_SECURE_NO_WARNINGS //WARNING!!!! DO NOT CHANGE THIS. CHANGING THIS WILL DESTROY YOUR GAME.
 //bypassing security warning of vs 2013
 #include "iGraphics.h"
@@ -9,26 +8,28 @@
 #include <list>
 #include<windows.h>
 #include <time.h>
+
 using namespace std;
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Idraw Here::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
 #define windowWidth 1020
 #define windowHeight 720
-#define GH 1 ///////// for high score////////////
 #define Y1 264
 #define Y2 416
+#define GH 1 ///////// for high score////////////
 bool skip = false;
 bool newG = false;
 bool gameOver = false;
 bool inDis = true;
-bool takeInput = false; //logic for input user name
+bool takeInput = true; //logic for input user name
+bool takeScore = true;
 bool showPassiveMousePosition = false;
 //for high score
-int  point = 0;
+long int  point = 0;
 int flag = 0;
 int movec = (windowWidth / 2) - 85;
 char* hoverImg[5] = { "images//help1.bmp", "images//hover4.bmp", "images//hover3.bmp", "images//hover2.bmp", "images//hover1.bmp" };
-
+int randomTrack, prevTrack = -1;
 int index0 = 0;
 int in = 0;
 char userName[1000];
@@ -45,11 +46,7 @@ int ix = 0, iy = 0;
 
 int mpx, mpy, count = 0;
 
-string currentPage = "newGame";
-
-char* menuTitles2[5] = { "help", "credits", "highScores", "settings", "newGame" };
-char* menuTitles[5] = { "images//help.bmp", "images//menu4.bmp", "images//menu3.bmp", "images//menu2.bmp", "images//menu1.bmp" };
-int totalMenuItems = 5;
+string currentPage = "homePage";
 
 char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
 int runningIndex = 0;
@@ -61,6 +58,36 @@ char roads[4][20] =
 	"images//c.bmp",
 	"images//d.bmp"
 };
+
+char *gameOverImg[3] = { "images//gameO5.bmp", "images//gameO2.bmp", "images//gameO1.bmp" };
+char *musicState[2] = { "ON", "OFF" };
+char *difficulityState[3] = { "LOW", "MEDIUM", "HIGH" };
+char explosion[22][25] =
+{
+	"images//explosion1.png",
+	"images//explosion1.png",
+	"images//explosion2.png",
+	"images//explosion2.png",
+	"images//explosion3.png",
+	"images//explosion3.png",
+	"images//explosion4.png",
+	"images//explosion4.png",
+	"images//explosion5.png",
+	"images//explosion5.png",
+	"images//explosion6.png",
+	"images//explosion6.png",
+	"images//explosion7.png",
+	"images//explosion7.png",
+	"images//explosion8.png",
+	"images//explosion8.png",
+	"images//explosion9.png",
+	"images//explosion9.png",
+	"images//explosion10.png",
+	"images//explosion10.png",
+	"images//explosion11.png",
+    "images//explosion11.png",
+
+};
 int roadIndex = 3;
 bool musicOn = true;
 //int vx = 442, vy = 0;
@@ -69,104 +96,48 @@ int charecterY = 10;
 bool jump = false;
 int jumpY = 10;
 int max_jumpY = 100;
+int scrollY = 0;
+int universalScoreVar = 0;
+double cloudY = 534;
+int explosionIndex = 0;
+bool isCollision = false;
+double collisionX = 0;
+double collisionY = 0;
+int scrollSettingsY = 0;
+int gameOverIndex = 0;
 int virusImg, virusImg75, virusImg100;
-int toonBoy;
-//int virusIndex = 0;
-int randomTrack, prevTrack = -1;
-/*vector<int> activeViruses;
-vector<int>::iterator virusIterator;*/
+int virusIndex = 0;
+
+bool optionMusicOff = false;
+bool optionMusicOn = true;
+bool optionDifficulityHigh = false;
+bool optionDifficulityLow = true;
+bool optionDifficulityMedium = false;
+int musicStateIndex = 0;
+int difficulityStateIndex = 0;
+
 
 
 void setHigh(char*, long int);
 void showhigh();
-void show();
+void show(long int);
 int getPercentage(int, int);
 void background();
 void homepage();
 void lifeIndicator(int);
 void run();
 void moveRoad();
+void convertInt(char , long int);
+int lineCount();
+void rankScore();
+
+void showExplosion();
 void sun();
 void loadImages();
 void virusFactory();
 
 
-struct MenuItem{
-	char *title;
-	char *backgroundImg;
-	char *hover; //to store hover effect image 
-	int x, y;
-	int width = 400;
-	int height = 50;
-	bool onHoverState = false, firstEntry = true;
-
-	MenuItem(){}
-	MenuItem(int x, int y, char *title) : x(x), y(y), title(title), backgroundImg(backgroundImg){
-
-	}
-
-	bool isInsideThis(int mx, int my){ //true if cursor is inside of the MenuItem
-		return (mx >= x && mx <= (x + width)) && (my >= y && my <= (y + height));
-	}
-	void display(){
-		iShowBMP2(x + getPercentage(width, 0), y + getPercentage(height, 40), backgroundImg, 0);
-		if (this->isInsideThis(mpx, mpy))
-			onHoverState = true;
-		else
-			onHoverState = false;
-
-		if (onHoverState){
-			iSetColor(0, 0, 0);
-			//	iFilledRectangle(x, y, width, height);
-			iShowBMP2(x + getPercentage(width, -7), y + getPercentage(height, 40), "images//arr.bmp", 0);
-			iShowBMP2(x + getPercentage(width, 0), y + getPercentage(height, 40), hover, 0);
-			iSetColor(255, 255, 255);
-			if (firstEntry){
-				PlaySound("Sounds\\btn_hover.wav", NULL, SND_ASYNC);
-				firstEntry = false;
-			}
-		}
-		else{
-			//iRectangle(x, y, width, height);
-			firstEntry = true;
-		}
-
-		//iText(x + getPercentage(width, 40), y + getPercentage(height, 40), title, GLUT_BITMAP_HELVETICA_18);
-
-	}
-
-	void cliked(){
-		currentPage = this->title;
-	}
-};
-
-struct Menu{
-	int x = 0, y = 0;
-	int dy = 70, totalItems;
-	int width, height;
-	MenuItem *items;
-
-	Menu(int x, int y, int width, int height, MenuItem items[], int totalItems) :x(x), y(y), width(width), height(height), totalItems(totalItems){
-		this->items = items;
-	}
-
-	void display(){
-		for (int i = 0; i < totalItems; i++){
-			items[i].x = this->x;
-			items[i].y = this->y;
-			items[i].width = this->width;
-			items[i].height = this->height;
-			items[i].title = menuTitles2[i];
-			items[i].hover = hoverImg[i];//hover state image (Muhaiminul kabir)
-			items[i].backgroundImg = menuTitles[i];
-			items[i].display();
-
-			y += dy;
-		}
-		y -= dy*totalItems; // Resetting y
-	}
-};
-
+#include "Menu.h";
 
 struct Track{
 	double x1, x2, y1, y2;
@@ -204,46 +175,150 @@ struct Track{
 		else{
 			cout << "Slope is Zero!" << endl;
 		}
-		
+
 	}
 };
 
-struct Virus{
-	int image;
-	Track track;
-	int size;
-	double speed;
-	bool hide;
 
-	Virus(){
-		hide = false;
-		speed = 1;
-		size = 50;
-	}
-	void spawn(){
-		if (!hide){
-			setVirusSize();
-			iShowImage(track.getX(), track.getY(), size, size, image);
-			track.speed(speed);
-		}
-		if (track.getY() > Y2) size = 50;
-		else if (track.getY() < Y2 && track.getY() > Y1) size = 75;
-		else if (track.getY() < Y1) size = 100;
-
-		if (track.trackEnded) hide = true;
-		
-	}
-
-	void setVirusSize(){
-		if (size == 50) image = virusImg;
-		else if (size == 75) image = virusImg75;
-		else if (size == 100) image = virusImg100;
-		else{
-			cout << "Invalid Virus Size" << endl;
-			exit(1);
-		}
-	}
+struct playerData{
+	char pl[1000];
+	long int scr;
 };
+
+
+#include "Virus.h"
+
+/***************************Function For SHowing Explosion********************/
+void showExplosion()
+{
+	if (isCollision == true){
+		int id = iLoadImage(explosion[explosionIndex++]);
+		if (explosionIndex > 21)
+		{
+			explosionIndex = 0;
+			isCollision = false;
+
+		}
+		iShowImage(collisionX, collisionY, 200, 200, id);
+	}
+
+
+}
+/*******************Function For SHowing Clouds***************/
+void showCloud()
+{ 
+	cloudY=cloudY+ 0.3;
+	iShowBMP2(0, cloudY, "images//cloud1.bmp", 0);
+	iShowBMP2(400, cloudY - 2, "images//cloud1.bmp", 0);
+	iShowBMP2(800, cloudY + 10, "images//cloud1.bmp", 0);
+	if (cloudY > 670)
+		cloudY = 534;
+
+
+
+
+}
+/******************Function to detecet collision***************/
+void collision()
+{
+
+
+/*	if ((lt.getX() + 60 > charecterX)&&(lt.getY() < charecterY + 180))
+	{
+		collisionX = lt.getX();
+		collisionY = lt.getY();
+		isCollision = true;
+	}
+
+
+	else if ((mt.getX() + 60 > charecterX) && (mt.getY() < charecterY + 180))
+	{
+		collisionX = mt.getX();
+		collisionY = mt.getY();
+		isCollision = true;
+	}
+
+
+	else if ((rt.getX() + 60) > charecterX&&(rt.getY() < charecterY + 180))
+	{
+		collisionX = rt.getX();
+		collisionY = rt.getY();
+		isCollision = true;
+	}
+
+	*/
+
+
+}
+void convertInt(char str[], long int a) {
+	long int i, rem, count = 0, f;
+	f = a;
+	while (f != 0) {
+		count++;
+		f /= 10;
+	}
+	for (i = 0; i < count; i++) {
+		rem = a % 10;
+		a = a / 10;
+		str[count - (i + 1)] = rem + '0';
+	}
+	str[count] = '\0';
+}
+
+int lineCount(){
+	FILE *f = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "r");
+	char us[1000];
+	int g;
+	int count = 0;
+	for (; !feof(f);) {
+		fscanf(f, "%s %d", us, &g);
+		count++;
+		if (feof(f)) {
+			break;
+		}
+	}
+	return count;
+}
+void rankScore(){
+	int k = lineCount();
+	struct playerData *x;
+	x = (struct playerData *)malloc((k)* sizeof(struct playerData));
+	FILE *a = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "r+");
+
+	for (int i = 0; i<k; i++) {
+		fscanf(a, "%s %d", x[i].pl, &x[i].scr);
+	}
+	fclose(a);
+	char z[1000];
+	for (int i = 0; i<k; i++) {
+		for (int j = i + 1; j < k; j++) {
+			if (x[i].scr < x[j].scr) {
+				int temp = x[i].scr;
+				x[i].scr = x[j].scr;
+				x[j].scr = temp;
+				strcpy(z, x[i].pl);
+				strcpy(x[i].pl, x[j].pl);
+				strcpy(x[j].pl, z);
+			}
+		}
+	}
+	FILE *n = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "w+");
+
+
+	for (int i = 0; i < k - 1; i++) {
+		fprintf(n, "%s\t", x[i].pl);
+		fprintf(n, "%ld\n", x[i].scr);
+	}
+	free(x);
+	fclose(n);
+}
+void loadImages(){
+	virusImg = iLoadImage("images/virus.png");
+	virusImg75 = iLoadImage("images/virus75.png");
+	virusImg100 = iLoadImage("images/virus100.png");
+}
+
+
 
 
 MenuItem menuItems[5];
@@ -258,58 +333,47 @@ list<Virus> activeViruses;
 
 
 
-void loadImages(){
-	virusImg = iLoadImage("images/virus.png");
-	virusImg75 = iLoadImage("images/virus75.png");
-	virusImg100 = iLoadImage("images/virus100.png");
-
-	toonBoy = iLoadImage("images/toonBoy/1.png");
-}
-void setHigh(char* player, long int b) {
+void setHigh(char* player, long int scr) {
 	int u;
 	long int y;
 	char c[1000];
 	int i;
 	FILE *a;
-
-	FILE *o;
 	FILE *g;
-	bool k = false;
+	struct playerData plr;
+	strcpy(plr.pl, player);
+	plr.scr = scr;
+
+	bool newFile = false;
 	a = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "r");
 	if (a == NULL) {
 
 		a = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "w");
-		k = true;
+		newFile = true;
 		fclose(a);
 	}
-	else{
+	else {
 		a = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "a");
 		fclose(a);
 	}
-
-	o = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "r+");
-	fscanf(o, "%s %d", c, &y);
-
-
-	fclose(o);
-
-	if (b > y){
-		g = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "w+");
-		fprintf(g, " %s       %d \n", player, b);
-		fclose(g);
-	}
-	else if (k == true){
-		g = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "w+");
-		fprintf(g, " %s       %d \n", player, b);
+	if (newFile == false &&  takeScore == true){
+		g = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "a+");
+		fprintf(g, " %s %ld \n", plr.pl, plr.scr);
 
 		fclose(g);
-	}
-	else{
-		g = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "w+");
-		fprintf(g, " %s       %d \n", c, y);
 
+	}
+	else if (newFile == true && takeScore == true) {
+		struct playerData f[10];
+		g = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "w+");
+		fprintf(g, " %s %ld \n", plr.pl, plr.scr);
+		for (i = 0; i < 10; i++){
+			fprintf(g, " %s %ld \n", "Unknown", 0);
+		}
+		newFile = false;
 		fclose(g);
 	}
+	rankScore();
 }
 void showHigh(){
 	FILE *a;
@@ -321,50 +385,57 @@ void showHigh(){
 		iText(220, 330, "Still no one has the courage to fight CORONA VIRUS", GLUT_BITMAP_TIMES_ROMAN_24);
 	}
 	else{
-		int g = fgetc(a);
-		char play[10000];
-		char ch;
-		for (;;){
+		iText(300, 500, "Player", GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(600, 500, "Score", GLUT_BITMAP_TIMES_ROMAN_24);
+		int count = 0;
+		int i = 0;
+		int scr;
+		char pl[1000];
+		char p[1000];
+		char v[20];
+		if (a != NULL) {
+			while (fscanf(a, "%s %ld", pl, &scr) != EOF) {
+				if (count < 10) {
 
-			fgets(play, 10000, a);
-			if (feof(a)){
-				break;
+					iText(300, 450 - i, pl, GLUT_BITMAP_TIMES_ROMAN_24);
+					convertInt(p,scr);
+					iText(600, 450 - i, p, GLUT_BITMAP_TIMES_ROMAN_24);
+
+				}
+				else{
+
+					fclose(a);
+					break;
+
+				}
+				count++;
+				i += 40;
+				convertInt(v,count);
+				iText(250, 490 - i, v, GLUT_BITMAP_TIMES_ROMAN_24);
+
+
 			}
-
+			fclose(a);
+			
 		}
-
-
-		iShowBMP2(200, 350, "images//coronaHigh.bmp", 0);
-		iText(400, 300, play, GLUT_BITMAP_TIMES_ROMAN_24);
-		fclose(a);
 	}
 }
-void show(int a)
+void show(long int a)
 {
-
-
-	int h;
-	int f = a;
-	int c = 0;
-	int *s;
-	c = (a == 0) ? 1 : (log10(a) + 1);
-	s = (int*)malloc(c);
-	for (int i = 0; i<c; i++){
-		h = f % 10;
-		f = f / 10;
-		s[i] = h;
-
+	char p[1000];
+	long int i, rem, count = 0, f;
+	f = a;
+	while (f != 0) {
+		count++;
+		f /= 10;
 	}
-	int*t;
-	t = (int*)malloc(c);
-	for (int i = 0; i< c; i++){
-		t[i] = s[(c - 1) - i];
-
-
+	for (i = 0; i < count; i++) {
+		rem = a % 10;
+		a = a / 10;
+		p[count - (i + 1)] = rem + '0';
 	}
-	char p[100];
-	for (int i = 0; i< c; i++){
-		p[i] = (char)(t[i] + 48);
+	p[count] = '\0';
+	for (int i = 0; i< count; i++){
 		if (p[i] == '0'){
 			iShowBMP2((400 + (i * 25)), 670, "images//0.bmp", 0);
 		}
@@ -404,16 +475,8 @@ void show(int a)
 int getPercentage(int num, int percent){
 	return (int)((num*percent) / 100);
 }
-void background()
-{
-	iFilledRectangle(0, 0, windowWidth, windowHeight);
 
-}
-void homePage(){
 
-	menu.display();
-
-}
 void lifeIndicator(int life){
 	int dx = 50, i, j;
 	if (life >= 0 && life <= 3){
@@ -437,6 +500,8 @@ void moveRoad(){
 	roadIndex--;
 	if (roadIndex <= 0) roadIndex = 3;
 }
+
+
 void sun(){
 	iSetColor(247, 127, 0);
 	iFilledCircle(161, 527, 50, 100);
@@ -444,7 +509,7 @@ void sun(){
 void virusFactory(){
 	int randomTrack = rand() % 3;
 	while (randomTrack == prevTrack) randomTrack = rand() % 3;
-	
+
 	switch (randomTrack){
 	case 0:
 		virus.track = lt;
@@ -468,98 +533,16 @@ void virusFactory(){
 	cout << virus.hide << endl;
 	activeViruses.push_back(virus);
 
-	if (activeViruses.size() == 10) { 
+	if (activeViruses.size() == 10) {
 		activeViruses.pop_front();
 	}
 }
 
+#include "Navigation.h";
 
-void newGame(){
-	int life = 3;
-
-	iShowBMP(0, 524, "images/sky.bmp");
-	iText(10, windowHeight - 30, userName, GLUT_BITMAP_TIMES_ROMAN_24);
-	
-	sun();
-	iShowBMP2(0, 0, roads[roadIndex], -1);
-
-	if (!activeViruses.empty()){
-		for (list<Virus>::iterator virus = activeViruses.begin(); virus != activeViruses.end(); virus++){
-			virus->spawn();
-		}
-	}
-
-	
-	if (!jump)
-	{
-		iShowBMP2(charecterX, charecterY, person_run[runningIndex], 0);
-	}
-
-
-	if (jump)
-	{
-
-		iShowBMP2(charecterX, charecterY + jumpY, "images//b14.bmp", 0);
-		jumpY += 20;
-
-		if (jumpY > 80)
-		{
-			jump = false;
-			jumpY = 0;
-		}
-
-	}
-
-	point++;// SHOULD BE CHANGED
-	show(point);// Showing int on screen
-
-
-	iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
-	iShowBMP2(windowWidth - 110, windowHeight - 50, "images//heart.bmp", 0);
-	if (gameOver){
-		setHigh(userName, point);//now for testing this function is taking score after pressing 'l',, it will take score when game over
-	}
-
-}
-void userPage(){
-
-
-	iShowBMP2(200, 500, "images//12.bmp", 0);
-
-	iText(180, 360, ">>", GLUT_BITMAP_TIMES_ROMAN_24);
-	iShowBMP2(200, 100, "images//13.bmp", 0);
-	iSetColor(255, 0, 0);
-	iText(250, 360, userName, GLUT_BITMAP_TIMES_ROMAN_24);
-
-
-}
-void highScores(){
-	iShowBMP2(350, 600, "images//high.bmp", 0);
-
-	showHigh();// showing high score of all time
-	iShowBMP2(10, 10, "images//home.bmp", 0);
-}
-void settings(){
-	//iShowBMP2(370, 600, "images//22.bmp", 0);
-	//iShowBMP2(10, 10, "images//home.bmp", 0);
-}
-void helpPage(){
-	/*
-	write insructions, rules here.
-	*/
-	iShowBMP2(10, 10, "images//home.bmp", 0);
-}
-void creditPage(){
-	iShowBMP2(400, 600, "images//credits.bmp", 0);
-	iShowBMP2(10, 10, "images//home.bmp", 0);
-	//ImgButton home(10, windowHeight - 60, "images//home.bmp", "homePage");
-	//home.display();
-}
-//bool user = true;
 void iDraw()
 {
 	iClear();
-	
 	iSetColor(0, 48, 73);
 	background();
 
@@ -577,15 +560,15 @@ void iDraw()
 			currentPage = "userPage";
 		}
 		else{
-			if (newG || 1){
+			if (newG){
 				newGame();
 			}
-		}	
+		}
 	}
 	else if (currentPage == "userPage"){
 		userPage();
 	}
-	else if (currentPage == "credit"){
+	else if (currentPage == "credits"){
 		creditPage();
 	}
 	else if (currentPage == "highScores"){
@@ -596,6 +579,9 @@ void iDraw()
 	}
 	else if (currentPage == "help"){
 		helpPage();
+	}
+	else if (currentPage == "gameOverPage"){
+		gameOverPage();
 	}
 }
 
@@ -610,7 +596,7 @@ void iDraw()
 
 void iMouseMove(int mx, int my)
 {
-
+	
 }
 //*******************************************************************ipassiveMouse***********************************************************************//
 void iPassiveMouseMove(int mx, int my)
@@ -626,120 +612,221 @@ void iMouse(int button, int state, int mx, int my)
 
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		PlaySound("Sounds\\click.wav", NULL, SND_SYNC);
-		
+		if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+		{
+			PlaySound("Sounds\\click.wav", NULL, SND_ASYNC);
 
-		if (currentPage == "homePage"){
-			for (int i = 0; i < totalMenuItems; i++){
-				if (menuItems[i].isInsideThis(mx, my)){
-					menuItems[i].cliked();
-					break;
+			if (currentPage == "homePage"){
+				for (int i = 0; i < totalMenuItems; i++){
+					if (menuItems[i].isInsideThis(mx, my)){
+						menuItems[i].cliked();
+						break;
+					}
+				}
+			}
+			else if (currentPage != "newGame" || currentPage != "homePage"){
+				if (mx < 100 && my < 100){
+					iShowBMP2(mpx, mpy, "images//home_black.bmp", 255);
+					currentPage = "homePage";
+					scrollY = 0;
+					scrollSettingsY = 0;
 				}
 			}
 		}
-		else if (currentPage == "Credits"){
 
+
+
+		if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+		{
 		}
 	}
-
-
-
-	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
-	{
-	}
 }
-
 /*
 function iKeyboard() is called whenever the user hits a key in keyboard.
 key- holds the ASCII value of the key pressed.
 */
 
 
-void iKeyboard(unsigned char key){
+	void iKeyboard(unsigned char key){
 
-	if (currentPage == "userPage"){
-		if (key != '\b'){
-			userName[index0] = key;
-			index0++;
-			userName[index0] = '\0';
+		if (currentPage == "userPage"){
+			if (key != '\b'){
+				userName[index0] = key;
+				index0++;
+				userName[index0] = '\0';
+
+			}
+
+			else if (key == '\b'){
+				if (index0 <= 0){
+					index0 = 0;
+				}
+				else{
+					index0--;
+				}
+				userName[index0] = '\0';
+			}
+
+
 
 		}
-
-		else{
-			if (index0 <= 0){
-				index0 = 0;
-			}
-			else{
-				index0--;
-			}
-		}
-
-
-	}
-	else if (currentPage == "newGame"){
-		if (key == ' ')
-		{
-			if (!jump)
+		else if (currentPage == "newGame"){
+			if (key == ' ')
 			{
-				jump = true;
+				if (!jump)
+				{
+					jump = true;
 
+
+				}
+			}
+
+			if (key == 'l')
+			{
+				gameOver = true;
 
 			}
 		}
+		else if (currentPage == "gameOverPage"){
+			if (key){
+				currentPage = "homePage";
+			}
 
-		if (key == 'l')
-		{
-			gameOver = true;//testing showHigh()
 		}
-	}
-	
 
-}
-
-/*
-function iSpecialKeyboard() is called whenver user hits special keys like-
-function keys, home, end, pg up, pg down, arraows etc. you have to use
-appropriate constants to detect them. A list is:
-GLUT_KEY_F1, GLUT_KEY_F2, GLUT_KEY_F3, GLUT_KEY_F4, GLUT_KEY_F5, GLUT_KEY_F6,
-GLUT_KEY_F7, GLUT_KEY_F8, GLUT_KEY_F9, GLUT_KEY_F10, GLUT_KEY_F11, GLUT_KEY_F12,
-GLUT_KEY_LEFT, GLUT_KEY_UP, GLUT_KEY_RIGHT, GLUT_KEY_DOWN, GLUT_KEY_PAGE UP,
-GLUT_KEY_PAGE DOWN, GLUT_KEY_HOME, GLUT_KEY_END, GLUT_KEY_INSERT
-*/
-void iSpecialKeyboard(unsigned char key)
-{
-	if (currentPage == "homePage"){
 
 	}
-	else if (currentPage == "userPage"){
-		if (key == GLUT_KEY_INSERT){
-			takeInput = false;
-			newG = true;
-			currentPage = "newGame";
+
+	/*
+	function iSpecialKeyboard() is called whenver user hits special keys like-
+	function keys, home, end, pg up, pg down, arraows etc. you have to use
+	appropriate constants to detect them. A list is:
+	GLUT_KEY_F1, GLUT_KEY_F2, GLUT_KEY_F3, GLUT_KEY_F4, GLUT_KEY_F5, GLUT_KEY_F6,
+	GLUT_KEY_F7, GLUT_KEY_F8, GLUT_KEY_F9, GLUT_KEY_F10, GLUT_KEY_F11, GLUT_KEY_F12,
+	GLUT_KEY_LEFT, GLUT_KEY_UP, GLUT_KEY_RIGHT, GLUT_KEY_DOWN, GLUT_KEY_PAGE UP,
+	GLUT_KEY_PAGE DOWN, GLUT_KEY_HOME, GLUT_KEY_END, GLUT_KEY_INSERT
+	*/
+	void iSpecialKeyboard(unsigned char key)
+	{
+		if (currentPage == "homePage"){
+
 		}
+		else if (currentPage == "userPage"){
+			if (key == GLUT_KEY_INSERT){
+				takeInput = false;
+				newG = true;
+				currentPage = "newGame";
+			}
+		}
+		else if (currentPage == "newGame"){
+			if (key == GLUT_KEY_RIGHT)
+			{
+				charecterX += 285;
+				if (charecterX > 720)
+					charecterX = 720;
+
+			}
+			if (key == GLUT_KEY_LEFT)
+			{
+				charecterX -= 285;
+				if (charecterX < 150)
+					charecterX = 150;
+
+			}
+			if (key == GLUT_KEY_UP){
+				if (!jump)
+					jump = true;
+			}
+		}
+
+		else if (currentPage == "help"){
+			if (key == GLUT_KEY_UP){
+				scrollY -= 25;
+			}
+			if (key == GLUT_KEY_DOWN){
+				scrollY += 25;
+			}
+		}
+		if (currentPage == "settings"){
+			if (key == GLUT_KEY_UP){
+				scrollSettingsY -= 100;
+				if (scrollSettingsY < 0){
+					scrollSettingsY = 100;
+				}
+
+			}
+			else if (key == GLUT_KEY_DOWN){
+				scrollSettingsY += 100;
+				if (scrollSettingsY > 100){
+					scrollSettingsY = 0;
+				}
+			}
+			else if (key == GLUT_KEY_RIGHT && scrollSettingsY == 0){
+				if (optionMusicOn){
+					optionMusicOff = true;
+					optionMusicOn = false;
+				}
+				else if (optionMusicOff){
+					optionMusicOff = false;
+					optionMusicOn = true;
+				}
+			}
+			else if (key == GLUT_KEY_LEFT && scrollSettingsY == 0){
+				if (optionMusicOn){
+					optionMusicOff = true;
+					optionMusicOn = false;
+				}
+				else if (optionMusicOff){
+					optionMusicOff = false;
+					optionMusicOn = true;
+				}
+			}
+			if (key == GLUT_KEY_RIGHT && scrollSettingsY == 100){
+
+				if (optionDifficulityLow){
+					optionDifficulityLow = false;
+					optionDifficulityMedium = true;
+					optionDifficulityHigh = false;
+				}
+				else if (optionDifficulityMedium){
+					optionDifficulityLow = false;
+					optionDifficulityMedium = false;
+					optionDifficulityHigh = true;
+				}
+				else if (optionDifficulityHigh){
+					optionDifficulityLow = true;
+					optionDifficulityMedium = false;
+					optionDifficulityHigh = false;
+				}
+			}
+			if (key == GLUT_KEY_LEFT && scrollSettingsY == 100){
+				if (optionDifficulityMedium){
+					optionDifficulityLow = true;
+					optionDifficulityMedium = false;
+					optionDifficulityHigh = false;
+				}
+				else if (optionDifficulityLow){
+					optionDifficulityLow = false;
+					optionDifficulityMedium = false;
+					optionDifficulityHigh = true;
+				}
+				else if (optionDifficulityHigh){
+					optionDifficulityLow = false;
+					optionDifficulityMedium = true;
+					optionDifficulityHigh = false;
+				}
+			}
+
+		}
+
+		if (currentPage != "homePage"){
+			if (key == GLUT_KEY_END){
+				currentPage = "homePage";
+			}
+		}
+
+
 	}
-	else if (currentPage == "newGame"){
-		if (key == GLUT_KEY_RIGHT)
-		{
-			charecterX += 40;
-			if (charecterX > 710)
-				charecterX = 710;
-
-		}
-		if (key == GLUT_KEY_LEFT)
-		{
-			charecterX -= 40;
-			if (charecterX < 190)
-				charecterX = 190;
-
-		}
-		if (key == GLUT_KEY_UP){
-			if (!jump)
-				jump = true;
-		}
-	}
-
-
-}
 
 
 int main()

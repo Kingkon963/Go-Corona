@@ -3,8 +3,8 @@ GLU32.LIB
 GLUT32.DLL
 Glaux.lib
 OPENGL32.LIB
-Project1.vcxproj
-Project1.vcxproj.filters
+Project2.vcxproj
+Project2.vcxproj.filters
 bitmap_loader.h
 glaux.h
 glui32.lib
@@ -12,4 +12,10 @@ glut.h
 glut32.lib
 iGraphics.h
 stb_image.h
+<<<<<<< HEAD
+.lib
+Project1.vcxproj
+Project1.vcxproj.filters
+=======
 Sounds/corona.wav
+>>>>>>> main
