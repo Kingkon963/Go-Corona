@@ -4,9 +4,11 @@
 #include <iostream>
 #include <array>
 #include <string>
+//#include <vector>
+#include <list>
 #include<windows.h>
-#include<vector>
-#include <list> 
+#include <time.h>
+
 using namespace std;
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Idraw Here::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
@@ -19,9 +21,9 @@ bool skip = false;
 bool newG = false;
 bool gameOver = false;
 bool inDis = true;
-bool takeInput = false; //logic for input user name
+bool takeInput = true; //logic for input user name
 bool takeScore = true;
-bool showPassiveMousePosition = true;
+bool showPassiveMousePosition = false;
 //for high score
 long int  point = 0;
 int flag = 0;
@@ -45,10 +47,6 @@ int ix = 0, iy = 0;
 int mpx, mpy, count = 0;
 
 string currentPage = "homePage";
-
-char* menuTitles2[6] = { "help", "credits", "highScores", "settings", "newGame" ,"gameOverPage"};
-char* menuTitles[5] = { "images//help.bmp", "images//menu4.bmp", "images//menu3.bmp", "images//menu2.bmp", "images//menu1.bmp" };
-int totalMenuItems = 5;
 
 char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
 int runningIndex = 0;
@@ -89,13 +87,6 @@ char explosion[22][25] =
 	"images//explosion11.png",
     "images//explosion11.png",
 
-
-
-
-
-
-
-
 };
 
 
@@ -131,7 +122,6 @@ int difficulityStateIndex = 0;
 
 
 
-
 void setHigh(char*, long int);
 void showhigh();
 void show(long int);
@@ -151,82 +141,8 @@ void loadImages();
 void virusFactory();
 
 
+#include "Menu.h";
 
-struct MenuItem{
-	char *title;
-	char *backgroundImg;
-	char *hover; //to store hover effect image 
-	int x, y;
-	int width = 400;
-	int height = 50;
-	bool onHoverState = false, firstEntry = true;
-
-	MenuItem(){}
-	MenuItem(int x, int y, char *title) : x(x), y(y), title(title), backgroundImg(backgroundImg){
-
-	}
-
-	bool isInsideThis(int mx, int my){ //true if cursor is inside of the MenuItem
-		return (mx >= x && mx <= (x + width)) && (my >= y && my <= (y + height));
-	}
-	void display(){
-		iShowBMP2(x + getPercentage(width, 0), y + getPercentage(height, 40), backgroundImg, 0);
-		if (this->isInsideThis(mpx, mpy))
-			onHoverState = true;
-		else
-			onHoverState = false;
-
-		if (onHoverState){
-			iSetColor(0, 0, 0);
-			//	iFilledRectangle(x, y, width, height);
-			iShowBMP2(x + getPercentage(width, -7), y + getPercentage(height, 40), "images//arr.bmp", 0);
-			iShowBMP2(x + getPercentage(width, 0), y + getPercentage(height, 40), hover, 0);
-			iSetColor(255, 255, 255);
-			if (firstEntry){
-				PlaySound("Sounds\\btn_hover.wav", NULL, SND_ASYNC);
-				firstEntry = false;
-			}
-		}
-		else{
-			//iRectangle(x, y, width, height);
-			firstEntry = true;
-		}
-
-		//iText(x + getPercentage(width, 40), y + getPercentage(height, 40), title, GLUT_BITMAP_HELVETICA_18);
-
-	}
-
-	void cliked(){
-		currentPage = this->title;
-	}
-};
-
-struct Menu{
-	int x = 0, y = 0;
-	int dy = 70, totalItems;
-	int width, height;
-	MenuItem *items;
-
-	Menu(int x, int y, int width, int height, MenuItem items[], int totalItems) :x(x), y(y), width(width), height(height), totalItems(totalItems){
-		this->items = items;
-	}
-
-	void display(){
-		for (int i = 0; i < totalItems; i++){
-			items[i].x = this->x;
-			items[i].y = this->y;
-			items[i].width = this->width;
-			items[i].height = this->height;
-			items[i].title = menuTitles2[i];
-			items[i].hover = hoverImg[i];//hover state image (Muhaiminul kabir)
-			items[i].backgroundImg = menuTitles[i];
-			items[i].display();
-
-			y += dy;
-		}
-		y -= dy*totalItems; // Resetting y
-	}
-};
 struct Track{
 	double x1, x2, y1, y2;
 	double x, y, m;
@@ -268,65 +184,13 @@ struct Track{
 };
 
 
-void loadImages(){
-	virusImg = iLoadImage("images/virus.png");
-	virusImg75 = iLoadImage("images/virus75.png");
-	virusImg100 = iLoadImage("images/virus100.png");
-}
-
-
-
 struct playerData{
 	char pl[1000];
 	long int scr;
 };
-struct Virus{
-	int image;
-	Track track;
-	int size;
-	double speed;
-	bool hide;
 
-	Virus(){
-		hide = false;
-		speed = 1;
-		size = 50;
-	}
-	void spawn(){
-		if (!hide){
-			setVirusSize();
-			iShowImage(track.getX(), track.getY(), size, size, image);
-			track.speed(speed);
-		}
-		if (track.getY() > Y2) size = 50;
-		else if (track.getY() < Y2 && track.getY() > Y1) size = 75;
-		else if (track.getY() < Y1) size = 100;
 
-		if (track.trackEnded) hide = true;
-
-	}
-
-	void setVirusSize(){
-		if (size == 50) image = virusImg;
-		else if (size == 75) image = virusImg75;
-		else if (size == 100) image = virusImg100;
-		else{
-			cout << "Invalid Virus Size" << endl;
-			exit(1);
-		}
-	}
-};
-
-MenuItem menuItems[5];
-Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
-//char virusX[5][20] = { "images//virus8.bmp", "images//virus9.bmp", "images//virus10.bmp", "images//virus11.bmp", "images//virus12.bmp" };
-Track lt(442, 514, 170, 16);
-Track mt(490, 517, 450, 16);
-Track rt(538, 508, 760, 16);
-
-Virus virus;
-list<Virus> activeViruses;
-
+#include "Virus.h"
 
 /***************************Function For SHowing Explosion********************/
 void showExplosion()
@@ -452,6 +316,26 @@ void rankScore(){
 	free(x);
 	fclose(n);
 }
+void loadImages(){
+	virusImg = iLoadImage("images/virus.png");
+	virusImg75 = iLoadImage("images/virus75.png");
+	virusImg100 = iLoadImage("images/virus100.png");
+}
+
+
+
+
+MenuItem menuItems[5];
+Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
+
+Track lt(442, 514, 190, 0);
+Track mt(490, 517, 450, 0);
+Track rt(538, 508, 710, 0);
+
+Virus virus;
+list<Virus> activeViruses;
+
+
 
 void setHigh(char* player, long int scr) {
 	int u;
@@ -593,16 +477,7 @@ void show(long int a, int x, int y)
 int getPercentage(int num, int percent){
 	return (int)((num*percent) / 100);
 }
-void background()
-{
-	iFilledRectangle(0, 0, windowWidth, windowHeight);
 
-}
-void homePage(){
-	iShowBMP(0,0,"images//bg.bmp");
-	menu.display();
-
-}
 
 void lifeIndicator(int life){
 	int dx = 50, i, j;
@@ -627,6 +502,7 @@ void moveRoad(){
 	roadIndex--;
 	if (roadIndex <= 0) roadIndex = 3;
 }
+
 
 void gameOverPage(){
 	life = 3;
@@ -657,6 +533,7 @@ void gameOverPage(){
 	iText(300, 70, "PRESS ANY KEY TO RETURN HOME", GLUT_BITMAP_TIMES_ROMAN_24);
 	gameOver = false;
 }
+
 void sun(){
 	iSetColor(247, 127, 0);
 	iFilledCircle(161, 527, 50, 100);
@@ -692,6 +569,8 @@ void virusFactory(){
 		activeViruses.pop_front();
 	}
 }
+
+#include "Navigation.h";
 
 
 /************************************************************************NEW GAME****************************************/
@@ -869,10 +748,10 @@ void creditPage(){
 	//home.display();
 }
 //bool user = true;
+
 void iDraw()
 {
 	iClear();
-
 	iSetColor(0, 48, 73);
 	background();
 
@@ -890,7 +769,7 @@ void iDraw()
 			currentPage = "userPage";
 		}
 		else{
-			if (newG || 1){
+			if (newG){
 				newGame();
 			}
 		}
@@ -1049,14 +928,14 @@ key- holds the ASCII value of the key pressed.
 			}
 		}
 		else if (currentPage == "newGame"){
-			if (key == GLUT_KEY_F2)
+			if (key == GLUT_KEY_RIGHT)
 			{
 				charecterX += 285;
 				if (charecterX > 720)
 					charecterX = 720;
 
 			}
-			if (key == GLUT_KEY_F1)
+			if (key == GLUT_KEY_LEFT)
 			{
 				charecterX -= 285;
 				if (charecterX < 150)
@@ -1161,11 +1040,9 @@ key- holds the ASCII value of the key pressed.
 
 int main()
 {
-	
 	int runTimer = iSetTimer(100, run);
 	int roadTimer = iSetTimer(100, moveRoad);
-
-	int virusFactoryTimer = iSetTimer(2000, virusFactory);
+	int virusFactoryTimer = iSetTimer(1500, virusFactory);
 	srand((unsigned)time(NULL));
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations
