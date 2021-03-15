@@ -4,9 +4,10 @@
 #include <iostream>
 #include <array>
 #include <string>
+//#include <vector>
+#include <list>
 #include<windows.h>
-#include<vector>
-#include <list> 
+#include <time.h>
 using namespace std;
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Idraw Here::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
@@ -44,7 +45,7 @@ int ix = 0, iy = 0;
 
 int mpx, mpy, count = 0;
 
-string currentPage = "homePage";
+string currentPage = "newGame";
 
 char* menuTitles2[6] = { "help", "credits", "highScores", "settings", "newGame" ,"gameOverPage"};
 char* menuTitles[5] = { "images//help.bmp", "images//menu4.bmp", "images//menu3.bmp", "images//menu2.bmp", "images//menu1.bmp" };
@@ -88,13 +89,6 @@ char explosion[22][25] =
 	"images//explosion10.png",
 	"images//explosion11.png",
     "images//explosion11.png",
-
-
-
-
-
-
-
 
 };
 int roadIndex = 3;
@@ -145,7 +139,6 @@ void showExplosion();
 void sun();
 void loadImages();
 void virusFactory();
-
 
 
 struct MenuItem{
@@ -264,14 +257,6 @@ struct Track{
 };
 
 
-void loadImages(){
-	virusImg = iLoadImage("images/virus.png");
-	virusImg75 = iLoadImage("images/virus75.png");
-	virusImg100 = iLoadImage("images/virus100.png");
-}
-
-
-
 struct playerData{
 	char pl[1000];
 	long int scr;
@@ -313,15 +298,6 @@ struct Virus{
 	}
 };
 
-MenuItem menuItems[5];
-Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
-//char virusX[5][20] = { "images//virus8.bmp", "images//virus9.bmp", "images//virus10.bmp", "images//virus11.bmp", "images//virus12.bmp" };
-Track lt(442, 514, 170, 16);
-Track mt(490, 517, 450, 16);
-Track rt(538, 508, 760, 16);
-
-Virus virus;
-list<Virus> activeViruses;
 
 
 /***************************Function For SHowing Explosion********************/
@@ -448,6 +424,26 @@ void rankScore(){
 	free(x);
 	fclose(n);
 }
+void loadImages(){
+	virusImg = iLoadImage("images/virus.png");
+	virusImg75 = iLoadImage("images/virus75.png");
+	virusImg100 = iLoadImage("images/virus100.png");
+}
+
+
+
+
+MenuItem menuItems[5];
+Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
+
+Track lt(442, 514, 190, 0);
+Track mt(490, 517, 450, 0);
+Track rt(538, 508, 710, 0);
+
+Virus virus;
+list<Virus> activeViruses;
+
+
 
 void setHigh(char* player, long int scr) {
 	int u;
@@ -692,7 +688,7 @@ void newGame(){
 	}
 
 	
-	iShowBMP(0, 524, "images//skyBlue.bmp");
+	iShowBMP(0, 524, "images//sky.bmp");
 	showCloud();
 
 	iShowBMP2(0, 0, roads[roadIndex], -1);
@@ -785,7 +781,6 @@ void userPage(){
 	iSetColor(255, 0, 0);
 	iText(250, 360, userName, GLUT_BITMAP_TIMES_ROMAN_24);
 
-
 }
 void highScores(){
 	iShowBMP2(350, 600, "images//high.bmp", 0);
@@ -832,19 +827,6 @@ void helpPage(){
 	*/
 	iText(250, 200+scrollY, "write insructions, rules here.", GLUT_BITMAP_TIMES_ROMAN_24);
 	iShowBMP2(10, 10, "images//home.bmp", 0);
-}
-
-
-char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
-int runnngIndex = 0;
-
-void newGame(){
-	iShowBMP2((windowWidth / 2) - 85, 0, person_run[runnngIndex++], 0);
-	if (runnngIndex > 1) runnngIndex = 0;
-	iDelayMS(125);
-
-	iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
-	iShowBMP2(windowWidth - 110, windowHeight - 50, "images//heart.bmp", 0);
 }
 
 
@@ -1056,14 +1038,14 @@ key- holds the ASCII value of the key pressed.
 			}
 		}
 		else if (currentPage == "newGame"){
-			if (key == GLUT_KEY_F2)
+			if (key == GLUT_KEY_RIGHT)
 			{
 				charecterX += 285;
 				if (charecterX > 720)
 					charecterX = 720;
 
 			}
-			if (key == GLUT_KEY_F1)
+			if (key == GLUT_KEY_LEFT)
 			{
 				charecterX -= 285;
 				if (charecterX < 150)
@@ -1168,11 +1150,9 @@ key- holds the ASCII value of the key pressed.
 
 int main()
 {
-	
 	int runTimer = iSetTimer(100, run);
 	int roadTimer = iSetTimer(100, moveRoad);
-
-	int virusFactoryTimer = iSetTimer(2000, virusFactory);
+	int virusFactoryTimer = iSetTimer(1500, virusFactory);
 	srand((unsigned)time(NULL));
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations
