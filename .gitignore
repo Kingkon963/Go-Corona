@@ -1,5 +1,3 @@
-1.bmp
-2.bmp
 Debug/
 GLU32.LIB
 GLUT32.DLL
@@ -14,4 +12,10 @@ glut.h
 glut32.lib
 iGraphics.h
 stb_image.h
+<<<<<<< HEAD
 .lib
+Project1.vcxproj
+Project1.vcxproj.filters
+=======
+Sounds/corona.wav
+>>>>>>> main
