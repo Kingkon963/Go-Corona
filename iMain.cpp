@@ -97,8 +97,12 @@ char explosion[22][25] =
 
 
 };
+
+
+int life = 3;
 int roadIndex = 3;
 bool musicOn = true;
+bool gameOverSound = false;
 //int vx = 442, vy = 0;
 int charecterX = (windowWidth / 2) - 80;
 int charecterY = 10;
@@ -536,7 +540,7 @@ void showHigh(){
 		}
 	}
 }
-void show(long int a)
+void show(long int a, int x, int y)
 {
 	char p[1000];
 	long int i, rem, count = 0, f;
@@ -553,41 +557,39 @@ void show(long int a)
 	p[count] = '\0';
 	for (int i = 0; i< count; i++){
 		if (p[i] == '0'){
-			iShowBMP2((400 + (i * 25)), 670, "images//0.bmp", 0);
+			iShowBMP2((x + (i * 25)), y, "images//0.bmp", 0);
 		}
 		else if (p[i] == '1'){
-			iShowBMP2((400 + (i * 25)), 670, "images//1.bmp", 0);
+			iShowBMP2((x + (i * 25)), y, "images//1.bmp", 0);
 		}
 		else if (p[i] == '2'){
-			iShowBMP2((400 + (i * 25)), 670, "images//2.bmp", 0);
+			iShowBMP2((x + (i * 25)), y, "images//2.bmp", 0);
 		}
 		else if (p[i] == '3'){
-			iShowBMP2((400 + (i * 25)), 670, "images//3.bmp", 0);
+			iShowBMP2((x + (i * 25)), y, "images//3.bmp", 0);
 		}
 		else if (p[i] == '4'){
-			iShowBMP2((400 + (i * 25)), 670, "images//4.bmp", 0);
+			iShowBMP2((x + (i * 25)), y, "images//4.bmp", 0);
 		}
 		else if (p[i] == '5'){
-			iShowBMP2((400 + (i * 25)), 670, "images//5.bmp", 0);
+			iShowBMP2((x + (i * 25)), y, "images//5.bmp", 0);
 		}
 		else if (p[i] == '6'){
-			iShowBMP2((400 + (i * 25)), 670, "images//6.bmp", 0);
+			iShowBMP2((x + (i * 25)), y, "images//6.bmp", 0);
 		}
 		else if (p[i] == '7'){
-			iShowBMP2((400 + (i * 25)), 670, "images//7.bmp", 0);
+			iShowBMP2((x + (i * 25)), y, "images//7.bmp", 0);
 		}
 		else if (p[i] == '8'){
-			iShowBMP2((400 + (i * 25)), 670, "images//8.bmp", 0);
+			iShowBMP2((x + (i * 25)), y, "images//8.bmp", 0);
 		}
 		else if (p[i] == '9'){
-			iShowBMP2((400 + (i * 25)), 670, "images//9.bmp", 0);
+			iShowBMP2((x + (i * 25)), y, "images//9.bmp", 0);
 		}
 	}
-	iSetColor(0, 0, 0);
-	//iText(510,700,p,GLUT_BITMAP_TIMES_ROMAN_24);
-	//iText(700, 700, "m", GLUT_BITMAP_TIMES_ROMAN_24);
-	iShowBMP2(350, 670, "images//pill_scr.bmp", 0);
+
 }
+	
 int getPercentage(int num, int percent){
 	return (int)((num*percent) / 100);
 }
@@ -627,7 +629,18 @@ void moveRoad(){
 }
 
 void gameOverPage(){
-	PlaySound(NULL,0,0);
+	life = 3;
+	if (optionMusicOn == true && gameOver == true && gameOverSound == true){
+		PlaySound("SOUNDS\\gameover.WAV", NULL, 1);
+		gameOverSound = false;
+
+	}
+
+	if (optionMusicOn){
+		musicOn = true;
+	}
+	index0 = 0;
+	userName[index0] = '\0';
 	point = 0;
 	takeInput = true;
 	char p[100];
@@ -637,10 +650,11 @@ void gameOverPage(){
 	if (gameOverIndex == 3){
 		gameOverIndex = 0;
 	}
-	iText(640, 260, "YOUR SCORE", GLUT_BITMAP_TIMES_ROMAN_24);
-	convertInt(p, universalScoreVar);
-	iText(690, 210, p, GLUT_BITMAP_TIMES_ROMAN_24);
-	iText(265, 70, "PRESS ANY KEY TO RETURN HOME", GLUT_BITMAP_TIMES_ROMAN_24);
+	iShowBMP2(370, 260, "images//yourScore.bmp", 0);
+	//convertInt(p, universalScoreVar);
+	show(universalScoreVar, 465, 200);
+	//iText(400, 210,p, GLUT_BITMAP_TIMES_ROMAN_24);
+	iText(300, 70, "PRESS ANY KEY TO RETURN HOME", GLUT_BITMAP_TIMES_ROMAN_24);
 	gameOver = false;
 }
 void sun(){
@@ -683,7 +697,7 @@ void virusFactory(){
 /************************************************************************NEW GAME****************************************/
 void newGame(){
 	
-	int life = 3;
+	
 	if (musicOn == true)
 	{
 		PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
@@ -707,6 +721,7 @@ void newGame(){
 			
 			if ((virus->track.getX() + 110 > charecterX&&virus->track.getX()-110<charecterX) &&virus->track.getY() < charecterY + 100 && virus->hide == false)
 			{
+				life--;
 				point = point - 50;
 				isCollision = true;
 				virus->hide = true;
@@ -745,34 +760,25 @@ void newGame(){
 
 	//iLine(240, 140, 442, 514);
 	point++;// SHOULD BE CHANGED
-	show(point);// Showing int on screen
-
-	//vy = ((187 * vx) / 101) - (30740 / 101);
-
-	//cout << lt.getY() << endl;
-	/*iShowBMP2(lt.getX(), lt.getY(), "images//virus.bmp", 255);
-	lt.speed(1);*/
-
-
-	/*collision();
-	if(isCollision)
-		showExplosion();*/
+	show(point, 400, 670);// Showing int on screen
+	lifeIndicator(life);
+	if (life < 1)
+		gameOver = true;
+	/**iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
+	iShowBMP2(windowWidth - 110, windowHeight - 50, "images//heart.bmp", 0);**/
 	
-	iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
-	iShowBMP2(windowWidth - 110, windowHeight - 50, "images//heart.bmp", 0);
 	if (gameOver){
 		takeScore = true;
+		gameOverSound = true;
 	}
 	if (takeScore){
 		universalScoreVar = point;
 		setHigh(userName, point);//now for testing this function is taking score after pressing 'l',, it will take score when game over
 		takeScore = false;
 	}
-	if (gameOver == true && takeScore ==  false){
+	if (gameOver == true && takeScore == false){
 		currentPage = "gameOverPage";
 	}
-	int id1 = iLoadImage("images//run1-01.png");
-	iShowImage(50, 50, 150,250, id1);
 	
 }
 void userPage(){
