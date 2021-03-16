@@ -87,6 +87,7 @@ char explosion[22][25] =
 	"images//explosion11.png",
 	"images//explosion11.png",
 
+
 };
 
 
@@ -124,14 +125,18 @@ int difficulityStateIndex = 0;
 
 void setHigh(char*, long int);
 void showhigh();
+
 void show(long int ,int ,int );
+
 int getPercentage(int, int);
 void background();
 void homepage();
 void lifeIndicator(int);
 void run();
 void moveRoad();
+
 void convertInt(char, long int);
+
 int lineCount();
 void rankScore();
 
@@ -210,44 +215,47 @@ void showExplosion()
 }
 /*******************Function For SHowing Clouds***************/
 void showCloud()
-{
-	cloudY = cloudY + 0.3;
+
+{ 
+	cloudY=cloudY+ 0.3;
 	iShowBMP2(0, cloudY, "images//cloud1.bmp", 0);
 	iShowBMP2(400, cloudY - 2, "images//cloud1.bmp", 0);
 	iShowBMP2(800, cloudY + 10, "images//cloud1.bmp", 0);
 	if (cloudY > 670)
 		cloudY = 534;
-
-
-
-
+  
+  
 }
 /******************Function to detecet collision***************/
 void collision()
 {
 
 
-	/*	if ((lt.getX() + 60 > charecterX)&&(lt.getY() < charecterY + 180))
+
+/*	if ((lt.getX() + 60 > charecterX)&&(lt.getY() < charecterY + 180))
 	{
-	collisionX = lt.getX();
-	collisionY = lt.getY();
-	isCollision = true;
+		collisionX = lt.getX();
+		collisionY = lt.getY();
+		isCollision = true;
+
 	}
 
 
 	else if ((mt.getX() + 60 > charecterX) && (mt.getY() < charecterY + 180))
 	{
-	collisionX = mt.getX();
-	collisionY = mt.getY();
-	isCollision = true;
+
+		collisionX = mt.getX();
+		collisionY = mt.getY();
+		isCollision = true;
 	}
 
 
 	else if ((rt.getX() + 60) > charecterX&&(rt.getY() < charecterY + 180))
 	{
-	collisionX = rt.getX();
-	collisionY = rt.getY();
-	isCollision = true;
+		collisionX = rt.getX();
+		collisionY = rt.getY();
+		isCollision = true;
+
 	}
 
 	*/
@@ -268,6 +276,7 @@ void convertInt(char str[], long int a) {
 	}
 	str[count] = '\0';
 }
+
 
 int lineCount(){
 	FILE *f = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "r");
@@ -491,7 +500,6 @@ void lifeIndicator(int life){
 			dx += 60;
 		}
 	}
-};
 
 void run(){
 	runningIndex++;
@@ -501,14 +509,14 @@ void run(){
 void moveRoad(){
 	roadIndex--;
 	if (roadIndex <= 0) roadIndex = 3;
+
 }
-
-
 
 
 void sun(){
 	iSetColor(247, 127, 0);
 	iFilledCircle(161, 527, 50, 100);
+
 }
 void virusFactory(){
 	int randomTrack = rand() % 3;
@@ -540,7 +548,10 @@ void virusFactory(){
 	if (activeViruses.size() == 10) {
 		activeViruses.pop_front();
 	}
+
+
 }
+
 
 
 
@@ -608,7 +619,7 @@ void iDraw()
 
 void iMouseMove(int mx, int my)
 {
-
+	
 }
 //*******************************************************************ipassiveMouse***********************************************************************//
 void iPassiveMouseMove(int mx, int my)
@@ -839,6 +850,7 @@ void iSpecialKeyboard(unsigned char key)
 
 
 }
+
 
 
 int main()

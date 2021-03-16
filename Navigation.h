@@ -13,6 +13,7 @@ void newGame(){
 
 
 	if (musicOn == true && optionMusicOn == true && gameOver == false)
+
 	{
 		PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
 
@@ -20,7 +21,9 @@ void newGame(){
 	}
 
 
-	iShowBMP(0, 524, "images//skyBlue.bmp");
+
+	iShowBMP(0, 524, "images//sky.bmp");
+
 	showCloud();
 
 	iShowBMP2(0, 0, roads[roadIndex], -1);
@@ -36,7 +39,6 @@ void newGame(){
 			if ((virus->track.getX() + 110 > charecterX&&virus->track.getX() - 110<charecterX) && virus->track.getY() < charecterY + 100 && virus->hide == false)
 			{
 				life--;
-				//point = point - 50;//
 				isCollision = true;
 				virus->hide = true;
 				collisionX = virus->track.getX() - 40;
@@ -74,6 +76,7 @@ void newGame(){
 
 	//iLine(240, 140, 442, 514);
 	point++;// SHOULD BE CHANGED
+
 	show(point, 400, 670);// Showing int on screen
 	lifeIndicator(life);
 	if (life < 1)
@@ -96,8 +99,6 @@ void newGame(){
 
 }
 void userPage(){
-
-
 
 	iShowBMP2(200, 500, "images//12.bmp", 0);
 
@@ -181,6 +182,7 @@ void creditPage(){
 	//home.display();
 }
 void gameOverPage(){
+
 	life = 3;
 	if (optionMusicOn == true && gameOver == true && gameOverSound == true){
 		PlaySound("SOUNDS\\gameover.WAV", NULL, 1);
@@ -193,6 +195,7 @@ void gameOverPage(){
 	}
 	index0 = 0;
 	userName[index0] = '\0';
+
 	point = 0;
 	takeInput = true;
 	char p[100];
