@@ -1,5 +1,5 @@
 void newGame(){
-
+	iResumeTimer(virusFactoryTimer);
 
 	if (musicOn == true && optionMusicOn == true && gameOver == false)
 
@@ -19,7 +19,6 @@ void newGame(){
 
 	iText(10, windowHeight - 30, userName, GLUT_BITMAP_TIMES_ROMAN_24);
 
-	//iDelayMS(10);
 
 	if (!activeViruses.empty()){
 		for (list<Virus>::iterator virus = activeViruses.begin(); virus != activeViruses.end(); virus++){
@@ -43,14 +42,15 @@ void newGame(){
 
 	if (!jump)
 	{
-		iShowBMP2(charecterX, charecterY, person_run[runningIndex], 0);
+		//iShowBMP2(charecterX, charecterY, charecterImg[runningIndex], 0);
+		iShowImage(charecterX, charecterY, 170, 280, charecterImg[runningIndex]);
 	}
-
 
 	if (jump)
 	{
 
-		iShowBMP2(charecterX, charecterY + jumpY, "images//b14.bmp", 0);
+		//iShowBMP2(charecterX, charecterY + jumpY, "images//b14.bmp", 0);
+		iShowImage(charecterX, charecterY + jumpY, 170, 280, charecterImg[runningIndex]);
 		jumpY += 20;
 		iDelayMS(10);
 		if (jumpY > 200)
@@ -58,10 +58,10 @@ void newGame(){
 			jump = false;
 			jumpY = 0;
 		}
-
-
-
 	}
+	
+	runningIndex++;
+	if (runningIndex >= 20) runningIndex = 0;
 
 	//iLine(240, 140, 442, 514);
 	point++;// SHOULD BE CHANGED

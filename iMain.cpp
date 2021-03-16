@@ -46,9 +46,13 @@ int ix = 0, iy = 0;
 
 int mpx, mpy, count = 0;
 
+// TIMER
+int virusFactoryTimer;
+int roadTimer;
+
 string currentPage = "homePage";
 
-char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
+//char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
 int runningIndex = 0;
 
 char roads[4][20] =
@@ -86,8 +90,6 @@ char explosion[22][25] =
 	"images//explosion10.png",
 	"images//explosion11.png",
 	"images//explosion11.png",
-
-
 };
 
 
@@ -121,6 +123,9 @@ bool optionDifficulityMedium = false;
 int musicStateIndex = 0;
 int difficulityStateIndex = 0;
 
+//charecter images
+int charecterImg[21];
+string charecterImageAddress;
 
 
 void setHigh(char*, long int);
@@ -294,16 +299,15 @@ void loadImages(){
 	virusImg = iLoadImage("images/virus.png");
 	virusImg75 = iLoadImage("images/virus75.png");
 	virusImg100 = iLoadImage("images/virus100.png");
+
+	for (int i = 0; i < 21; i++){
+		charecterImageAddress = "images/charecter/";
+		charecterImageAddress += to_string(i+1);
+		charecterImageAddress += ".png";
+		//cout << charecterImageAddress << endl;
+		charecterImg[i] = iLoadImage((char *)charecterImageAddress.c_str());
+	}
 }
-
-
-
-
-
-
-
-
-
 
 void setHigh(char* player, long int scr) {
 	int u;
@@ -463,7 +467,7 @@ void lifeIndicator(int life){
 
 void run(){
 	runningIndex++;
-	if (runningIndex > 1) runningIndex = 0;
+	if (runningIndex >= 20) runningIndex = 0;
 }
 
 void moveRoad(){
@@ -803,12 +807,12 @@ void iSpecialKeyboard(unsigned char key)
 }
 
 
-
 int main()
 {
-	int runTimer = iSetTimer(100, run);
-	int roadTimer = iSetTimer(100, moveRoad);
-	int virusFactoryTimer = iSetTimer(1500, virusFactory);
+	//int runTimer = iSetTimer(0, run);
+	roadTimer = iSetTimer(100, moveRoad);
+	virusFactoryTimer = iSetTimer(1500, virusFactory);
+
 	srand((unsigned)time(NULL));
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations
