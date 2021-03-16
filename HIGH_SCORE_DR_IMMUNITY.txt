@@ -1,5 +1,9 @@
+asdf	285
+juyfg	169
 jffkfkkf	18
 jjff	15
+asdf	1
+juyfg	1
 Unknown	0
 Unknown	0
 Unknown	0
@@ -10,4 +14,3 @@ Unknown	0
 Unknown	0
 Unknown	0
 Unknown	0
-

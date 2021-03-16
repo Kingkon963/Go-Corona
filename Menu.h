@@ -77,3 +77,7 @@ struct Menu{
 		y -= dy*totalItems; // Resetting y
 	}
 };
+
+
+MenuItem menuItems[5];
+Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
