@@ -11,8 +11,9 @@ void homePage(){
 /************************************************************************NEW GAME****************************************/
 void newGame(){
 
-	int life = 3;
-	if (musicOn == true)
+
+	if (musicOn == true && optionMusicOn == true && gameOver == false)
+
 	{
 		PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
 
@@ -20,7 +21,9 @@ void newGame(){
 	}
 
 
+
 	iShowBMP(0, 524, "images//sky.bmp");
+
 	showCloud();
 
 	iShowBMP2(0, 0, roads[roadIndex], -1);
@@ -35,7 +38,7 @@ void newGame(){
 
 			if ((virus->track.getX() + 110 > charecterX&&virus->track.getX() - 110<charecterX) && virus->track.getY() < charecterY + 100 && virus->hide == false)
 			{
-				point = point - 50;
+				life--;
 				isCollision = true;
 				virus->hide = true;
 				collisionX = virus->track.getX() - 40;
@@ -73,23 +76,17 @@ void newGame(){
 
 	//iLine(240, 140, 442, 514);
 	point++;// SHOULD BE CHANGED
-	show(point);// Showing int on screen
 
-	//vy = ((187 * vx) / 101) - (30740 / 101);
+	show(point, 400, 670);// Showing int on screen
+	lifeIndicator(life);
+	if (life < 1)
+		gameOver = true;
+	/**iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
+	iShowBMP2(windowWidth - 110, windowHeight - 50, "images//heart.bmp", 0);**/
 
-	//cout << lt.getY() << endl;
-	/*iShowBMP2(lt.getX(), lt.getY(), "images//virus.bmp", 255);
-	lt.speed(1);*/
-
-
-	/*collision();
-	if(isCollision)
-	showExplosion();*/
-
-	iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
-	iShowBMP2(windowWidth - 110, windowHeight - 50, "images//heart.bmp", 0);
 	if (gameOver){
 		takeScore = true;
+		gameOverSound = true;
 	}
 	if (takeScore){
 		universalScoreVar = point;
@@ -99,12 +96,9 @@ void newGame(){
 	if (gameOver == true && takeScore == false){
 		currentPage = "gameOverPage";
 	}
-	int id1 = iLoadImage("images//run1-01.png");
-	iShowImage(50, 50, 150, 250, id1);
 
 }
 void userPage(){
-
 
 	iShowBMP2(200, 500, "images//12.bmp", 0);
 
@@ -112,7 +106,6 @@ void userPage(){
 	iShowBMP2(200, 100, "images//13.bmp", 0);
 	iSetColor(255, 0, 0);
 	iText(250, 360, userName, GLUT_BITMAP_TIMES_ROMAN_24);
-
 }
 void highScores(){
 	iShowBMP2(350, 600, "images//high.bmp", 0);
@@ -189,7 +182,20 @@ void creditPage(){
 	//home.display();
 }
 void gameOverPage(){
-	PlaySound(NULL, 0, 0);
+
+	life = 3;
+	if (optionMusicOn == true && gameOver == true && gameOverSound == true){
+		PlaySound("SOUNDS\\gameover.WAV", NULL, 1);
+		gameOverSound = false;
+
+	}
+
+	if (optionMusicOn){
+		musicOn = true;
+	}
+	index0 = 0;
+	userName[index0] = '\0';
+
 	point = 0;
 	takeInput = true;
 	char p[100];
@@ -199,9 +205,10 @@ void gameOverPage(){
 	if (gameOverIndex == 3){
 		gameOverIndex = 0;
 	}
-	iText(640, 260, "YOUR SCORE", GLUT_BITMAP_TIMES_ROMAN_24);
-	convertInt(p, universalScoreVar);
-	iText(690, 210, p, GLUT_BITMAP_TIMES_ROMAN_24);
-	iText(265, 70, "PRESS ANY KEY TO RETURN HOME", GLUT_BITMAP_TIMES_ROMAN_24);
+	iShowBMP2(370, 260, "images//yourScore.bmp", 0);
+	//convertInt(p, universalScoreVar);
+	show(universalScoreVar, 465, 200);
+	//iText(400, 210,p, GLUT_BITMAP_TIMES_ROMAN_24);
+	iText(300, 70, "PRESS ANY KEY TO RETURN HOME", GLUT_BITMAP_TIMES_ROMAN_24);
 	gameOver = false;
 }
