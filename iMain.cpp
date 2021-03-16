@@ -46,9 +46,13 @@ int ix = 0, iy = 0;
 
 int mpx, mpy, count = 0;
 
+// TIMER
+int virusFactoryTimer;
+int roadTimer;
+
 string currentPage = "homePage";
 
-char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
+//char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
 int runningIndex = 0;
 
 char roads[4][20] =
@@ -85,8 +89,7 @@ char explosion[22][25] =
 	"images//explosion10.png",
 	"images//explosion10.png",
 	"images//explosion11.png",
-    "images//explosion11.png",
-
+	"images//explosion11.png",
 };
 
 
@@ -120,68 +123,36 @@ bool optionDifficulityMedium = false;
 int musicStateIndex = 0;
 int difficulityStateIndex = 0;
 
+//charecter images
+int charecterImg[21];
+string charecterImageAddress;
 
 
 void setHigh(char*, long int);
-void showhigh();
-void show(long int);
+void showHigh();
+
+void show(long int ,int ,int );
+
 int getPercentage(int, int);
 void background();
-void homepage();
+void homePage();
 void lifeIndicator(int);
 void run();
 void moveRoad();
-void convertInt(char , long int);
+
+void convertInt(char, long int);
+
 int lineCount();
 void rankScore();
 
 void showExplosion();
+void showCloud();
+void collision();
 void sun();
 void loadImages();
 void virusFactory();
 
 
-#include "Menu.h";
-
-struct Track{
-	double x1, x2, y1, y2;
-	double x, y, m;
-	bool trackEnded = false;
-	Track(){}
-	Track(double x1, double y1, double x2, double y2){
-		this->x1 = x1;
-		this->y1 = y1;
-		this->x2 = x2;
-		this->y2 = y2;
-
-		this->x = x1;
-
-		this->m = (y2 - y1) / (x2 - x1);
-	}
-
-	double getX(){
-		return x;
-	}
-
-	double getY(){
-		return abs(m*(x - x1) + y1);
-	}
-
-	void speed(double dx){
-		if (x1 > x2){
-			x -= dx;
-			if (x <= x2) trackEnded = true;
-		}
-		else if (x1 < x2){
-			x += dx;
-			if (x >= x2) trackEnded = true;
-		}
-		else{
-			cout << "Slope is Zero!" << endl;
-		}
-
-	}
-};
 
 
 struct playerData{
@@ -190,7 +161,11 @@ struct playerData{
 };
 
 
-#include "Virus.h"
+
+#include "Track.h";
+#include "Virus.h";
+#include "Menu.h";
+#include "Navigation.h";
 
 /***************************Function For SHowing Explosion********************/
 void showExplosion()
@@ -210,6 +185,7 @@ void showExplosion()
 }
 /*******************Function For SHowing Clouds***************/
 void showCloud()
+
 { 
 	cloudY=cloudY+ 0.3;
 	iShowBMP2(0, cloudY, "images//cloud1.bmp", 0);
@@ -217,14 +193,13 @@ void showCloud()
 	iShowBMP2(800, cloudY + 10, "images//cloud1.bmp", 0);
 	if (cloudY > 670)
 		cloudY = 534;
-
-
-
-
+  
+  
 }
 /******************Function to detecet collision***************/
 void collision()
 {
+
 
 
 /*	if ((lt.getX() + 60 > charecterX)&&(lt.getY() < charecterY + 180))
@@ -232,11 +207,13 @@ void collision()
 		collisionX = lt.getX();
 		collisionY = lt.getY();
 		isCollision = true;
+
 	}
 
 
 	else if ((mt.getX() + 60 > charecterX) && (mt.getY() < charecterY + 180))
 	{
+
 		collisionX = mt.getX();
 		collisionY = mt.getY();
 		isCollision = true;
@@ -248,6 +225,7 @@ void collision()
 		collisionX = rt.getX();
 		collisionY = rt.getY();
 		isCollision = true;
+
 	}
 
 	*/
@@ -268,6 +246,7 @@ void convertInt(char str[], long int a) {
 	}
 	str[count] = '\0';
 }
+
 
 int lineCount(){
 	FILE *f = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "r");
@@ -320,22 +299,15 @@ void loadImages(){
 	virusImg = iLoadImage("images/virus.png");
 	virusImg75 = iLoadImage("images/virus75.png");
 	virusImg100 = iLoadImage("images/virus100.png");
+
+	for (int i = 0; i < 21; i++){
+		charecterImageAddress = "images/charecter/";
+		charecterImageAddress += to_string(i+1);
+		charecterImageAddress += ".png";
+		//cout << charecterImageAddress << endl;
+		charecterImg[i] = iLoadImage((char *)charecterImageAddress.c_str());
+	}
 }
-
-
-
-
-MenuItem menuItems[5];
-Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
-
-Track lt(442, 514, 190, 0);
-Track mt(490, 517, 450, 0);
-Track rt(538, 508, 710, 0);
-
-Virus virus;
-list<Virus> activeViruses;
-
-
 
 void setHigh(char* player, long int scr) {
 	int u;
@@ -360,7 +332,7 @@ void setHigh(char* player, long int scr) {
 		a = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "a");
 		fclose(a);
 	}
-	if (newFile == false &&  takeScore == true){
+	if (newFile == false && takeScore == true){
 		g = fopen("HIGH_SCORE_DR_IMMUNITY.txt", "a+");
 		fprintf(g, " %s %ld \n", plr.pl, plr.scr);
 
@@ -402,7 +374,7 @@ void showHigh(){
 				if (count < 10) {
 
 					iText(300, 450 - i, pl, GLUT_BITMAP_TIMES_ROMAN_24);
-					convertInt(p,scr);
+					convertInt(p, scr);
 					iText(600, 450 - i, p, GLUT_BITMAP_TIMES_ROMAN_24);
 
 				}
@@ -414,13 +386,13 @@ void showHigh(){
 				}
 				count++;
 				i += 40;
-				convertInt(v,count);
+				convertInt(v, count);
 				iText(250, 490 - i, v, GLUT_BITMAP_TIMES_ROMAN_24);
 
 
 			}
 			fclose(a);
-			
+
 		}
 	}
 }
@@ -473,7 +445,7 @@ void show(long int a, int x, int y)
 	}
 
 }
-	
+
 int getPercentage(int num, int percent){
 	return (int)((num*percent) / 100);
 }
@@ -491,52 +463,24 @@ void lifeIndicator(int life){
 			dx += 60;
 		}
 	}
-};
+}
 
 void run(){
 	runningIndex++;
-	if (runningIndex > 1) runningIndex = 0;
+	if (runningIndex >= 20) runningIndex = 0;
 }
 
 void moveRoad(){
 	roadIndex--;
 	if (roadIndex <= 0) roadIndex = 3;
+
 }
 
-
-void gameOverPage(){
-	life = 3;
-	if (optionMusicOn == true && gameOver == true && gameOverSound == true){
-		PlaySound("SOUNDS\\gameover.WAV", NULL, 1);
-		gameOverSound = false;
-
-	}
-
-	if (optionMusicOn){
-		musicOn = true;
-	}
-	index0 = 0;
-	userName[index0] = '\0';
-	point = 0;
-	takeInput = true;
-	char p[100];
-	iShowBMP(0, 0, gameOverImg[gameOverIndex]);
-	gameOverIndex++;
-	iDelayMS(100);
-	if (gameOverIndex == 3){
-		gameOverIndex = 0;
-	}
-	iShowBMP2(370, 260, "images//yourScore.bmp", 0);
-	//convertInt(p, universalScoreVar);
-	show(universalScoreVar, 465, 200);
-	//iText(400, 210,p, GLUT_BITMAP_TIMES_ROMAN_24);
-	iText(300, 70, "PRESS ANY KEY TO RETURN HOME", GLUT_BITMAP_TIMES_ROMAN_24);
-	gameOver = false;
-}
 
 void sun(){
 	iSetColor(247, 127, 0);
 	iFilledCircle(161, 527, 50, 100);
+
 }
 void virusFactory(){
 	int randomTrack = rand() % 3;
@@ -568,186 +512,11 @@ void virusFactory(){
 	if (activeViruses.size() == 10) {
 		activeViruses.pop_front();
 	}
-}
-
-#include "Navigation.h";
-
-
-/************************************************************************NEW GAME****************************************/
-void newGame(){
-	
-	
-	if (musicOn == true)
-	{
-		PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
-	
-		musicOn = false;
-	}
-
-	
-	iShowBMP(0, 524, "images//skyBlue.bmp");
-	showCloud();
-
-	iShowBMP2(0, 0, roads[roadIndex], -1);
-	
-	iText(10, windowHeight - 30, userName, GLUT_BITMAP_TIMES_ROMAN_24);
-
-	//iDelayMS(10);
-	
-	if (!activeViruses.empty()){
-		for (list<Virus>::iterator virus = activeViruses.begin(); virus != activeViruses.end(); virus++){
-			virus->spawn();
-			
-			if ((virus->track.getX() + 110 > charecterX&&virus->track.getX()-110<charecterX) &&virus->track.getY() < charecterY + 100 && virus->hide == false)
-			{
-				life--;
-				point = point - 50;
-				isCollision = true;
-				virus->hide = true;
-				collisionX = virus->track.getX()-40;
-				collisionY = virus->track.getY();
-			}
-			showExplosion();
-		}
-	}
-
-		
-		
-	
-	
-	if (!jump)
-	{
-		iShowBMP2(charecterX, charecterY, person_run[runningIndex], 0);
-	}
-
-
-	if (jump)
-	{
-
-		iShowBMP2(charecterX, charecterY + jumpY, "images//b14.bmp", 0);
-		jumpY += 20;
-		iDelayMS(10);
-		if (jumpY > 200)
-		{
-			jump = false;
-			jumpY = 0;
-		}
-
-
-
-	}
-
-	//iLine(240, 140, 442, 514);
-	point++;// SHOULD BE CHANGED
-	show(point, 400, 670);// Showing int on screen
-	lifeIndicator(life);
-	if (life < 1)
-		gameOver = true;
-	/**iShowBMP2(windowWidth - 50, windowHeight - 50, "images//heart_filled.bmp", 0);
-	iShowBMP2(windowWidth - 110, windowHeight - 50, "images//heart.bmp", 0);**/
-	
-	if (gameOver){
-		takeScore = true;
-		gameOverSound = true;
-	}
-	if (takeScore){
-		universalScoreVar = point;
-		setHigh(userName, point);//now for testing this function is taking score after pressing 'l',, it will take score when game over
-		takeScore = false;
-	}
-	if (gameOver == true && takeScore == false){
-		currentPage = "gameOverPage";
-	}
-	
-}
-void userPage(){
-
-	
-	iShowBMP2(200, 500, "images//12.bmp", 0);
-
-	iText(180, 360, ">>", GLUT_BITMAP_TIMES_ROMAN_24);
-	iShowBMP2(200, 100, "images//13.bmp", 0);
-	iSetColor(255, 0, 0);
-	iText(250, 360, userName, GLUT_BITMAP_TIMES_ROMAN_24);
 
 
 }
-void highScores(){
-	iShowBMP2(350, 600, "images//high.bmp", 0);
-
-	showHigh();// showing high score of all time
-	iShowBMP2(10, 10, "images//home.bmp", 0);
-}
-void settings(){
-
-	iText(260, 575, "Music", GLUT_BITMAP_TIMES_ROMAN_24);
-	iText(260, 475, "Difficulity", GLUT_BITMAP_TIMES_ROMAN_24);
-
-	if (scrollSettingsY == 0 && optionMusicOn == true){
-		iText(470, 575, "ON", GLUT_BITMAP_TIMES_ROMAN_24);
-		musicStateIndex = 0;
-	}
-	else if (scrollSettingsY == 0 && optionMusicOff == true){
-		iText(470, 575, "OFF", GLUT_BITMAP_TIMES_ROMAN_24);
-		musicStateIndex = 1;
-	}
-	else if (scrollSettingsY == 100 && optionDifficulityHigh == true){
-		iText(470, 475, "HIGH", GLUT_BITMAP_TIMES_ROMAN_24);
-		difficulityStateIndex = 2;
-	}
-	else if (scrollSettingsY == 100 && optionDifficulityLow == true){
-		iText(470, 475, "LOW", GLUT_BITMAP_TIMES_ROMAN_24);
-		difficulityStateIndex = 0;
-	}
-	else if (scrollSettingsY == 100 && optionDifficulityMedium == true){
-		iText(470, 475, "MEDIUM", GLUT_BITMAP_TIMES_ROMAN_24);
-		difficulityStateIndex = 1;
-	}
-
-	iRectangle(470, 565 - scrollSettingsY, 200, 50);
-	iText(470, 575, musicState[musicStateIndex], GLUT_BITMAP_TIMES_ROMAN_24);
-	iText(470, 475, difficulityState[difficulityStateIndex], GLUT_BITMAP_TIMES_ROMAN_24);
-	iText(300, 275, "PRESS ARROW KEYS TO NAVIGATE", GLUT_BITMAP_TIMES_ROMAN_24);
-	//iShowBMP2(370, 600, "images//22.bmp", 0);
-	iShowBMP2(10, 10, "images//home.bmp", 0);
-}
-void helpPage(){
-	/*
-	write insructions, rules here.
-	*/
-	iText(250, 200+scrollY, "write insructions, rules here.", GLUT_BITMAP_TIMES_ROMAN_24);
-	iShowBMP2(10, 10, "images//home.bmp", 0);
-}
-
-void creditPage(){
-	iShowBMP(0, 0, "images//creditBack.bmp");
-	iShowBMP2(200, 650, "images//credits.bmp", 0);
-	iLine(200,625, 500, 625);
-	iShowBMP2(500, 550, "images//naim1.bmp", 0);
-	iShowBMP2(500, 400, "images//omi1.bmp", 0);
-	iShowBMP2(500, 250, "images//rafid1.bmp", 0);
-	iShowBMP2(500, 100, "images//nirjon1.bmp", 0);
-
-	iShowBMP(300, 480 , "images//Naim.bmp");
-	iShowBMP(300, 330 , "images//omi.bmp");
-	iShowBMP(300, 180 , "images//Fahim.bmp");
-	iShowBMP(300, 30 , "images//Nirjon.bmp");
 
 
-	iText(500, 525 , "ID- 190204081", GLUT_BITMAP_TIMES_ROMAN_24);
-	iText(500, 375 , "ID- 190204074", GLUT_BITMAP_TIMES_ROMAN_24);
-	iText(500, 225 , "ID- 190204082", GLUT_BITMAP_TIMES_ROMAN_24);
-	iText(500, 75 , "ID- 190204063", GLUT_BITMAP_TIMES_ROMAN_24);
-	iDelayMS(10);
-	
-		iShowBMP2(10, 10, "images//home_black.bmp", 0);
-
-	
-	
-	//ImgButton home(10, windowHeight - 60, "images//home.bmp", "homePage");
-	//home.display();
-}
-//bool user = true;
 
 void iDraw()
 {
@@ -813,7 +582,7 @@ void iPassiveMouseMove(int mx, int my)
 	mpx = mx;
 	mpy = my;
 	if (showPassiveMousePosition)
-	cout << mpx << ' ' << mpy << endl;
+		cout << mpx << ' ' << mpy << endl;
 }
 
 void iMouse(int button, int state, int mx, int my)
@@ -856,193 +625,194 @@ key- holds the ASCII value of the key pressed.
 */
 
 
-	void iKeyboard(unsigned char key){
+void iKeyboard(unsigned char key){
 
-		if (currentPage == "userPage"){
-			if (key != '\b'){
-				userName[index0] = key;
-				index0++;
-				userName[index0] = '\0';
-
-			}
-
-			else if (key == '\b'){
-				if (index0 <= 0){
-					index0 = 0;
-				}
-				else{
-					index0--;
-				}
-				userName[index0] = '\0';
-			}
-
-
+	if (currentPage == "userPage"){
+		if (key != '\b'){
+			userName[index0] = key;
+			index0++;
+			userName[index0] = '\0';
 
 		}
-		else if (currentPage == "newGame"){
-			if (key == ' ')
-			{
-				if (!jump)
-				{
-					jump = true;
 
-
-				}
+		else if (key == '\b'){
+			if (index0 <= 0){
+				index0 = 0;
 			}
-
-			if (key == 'l')
-			{
-				gameOver = true;
-
+			else{
+				index0--;
 			}
+			userName[index0] = '\0';
 		}
-		else if (currentPage == "gameOverPage"){
-			if (key){
-				currentPage = "homePage";
-			}
 
-		}
 
 
 	}
-
-	/*
-	function iSpecialKeyboard() is called whenver user hits special keys like-
-	function keys, home, end, pg up, pg down, arraows etc. you have to use
-	appropriate constants to detect them. A list is:
-	GLUT_KEY_F1, GLUT_KEY_F2, GLUT_KEY_F3, GLUT_KEY_F4, GLUT_KEY_F5, GLUT_KEY_F6,
-	GLUT_KEY_F7, GLUT_KEY_F8, GLUT_KEY_F9, GLUT_KEY_F10, GLUT_KEY_F11, GLUT_KEY_F12,
-	GLUT_KEY_LEFT, GLUT_KEY_UP, GLUT_KEY_RIGHT, GLUT_KEY_DOWN, GLUT_KEY_PAGE UP,
-	GLUT_KEY_PAGE DOWN, GLUT_KEY_HOME, GLUT_KEY_END, GLUT_KEY_INSERT
-	*/
-	void iSpecialKeyboard(unsigned char key)
-	{
-		if (currentPage == "homePage"){
-
-		}
-		else if (currentPage == "userPage"){
-			if (key == GLUT_KEY_INSERT){
-				takeInput = false;
-				newG = true;
-				currentPage = "newGame";
-			}
-		}
-		else if (currentPage == "newGame"){
-			if (key == GLUT_KEY_RIGHT)
+	else if (currentPage == "newGame"){
+		if (key == ' ')
+		{
+			if (!jump)
 			{
-				charecterX += 285;
-				if (charecterX > 720)
-					charecterX = 720;
+				jump = true;
 
-			}
-			if (key == GLUT_KEY_LEFT)
-			{
-				charecterX -= 285;
-				if (charecterX < 150)
-					charecterX = 150;
 
-			}
-			if (key == GLUT_KEY_UP){
-				if (!jump)
-					jump = true;
 			}
 		}
 
-		else if (currentPage == "help"){
-			if (key == GLUT_KEY_UP){
-				scrollY -= 25;
-			}
-			if (key == GLUT_KEY_DOWN){
-				scrollY += 25;
-			}
-		}
-		if (currentPage == "settings"){
-			if (key == GLUT_KEY_UP){
-				scrollSettingsY -= 100;
-				if (scrollSettingsY < 0){
-					scrollSettingsY = 100;
-				}
-
-			}
-			else if (key == GLUT_KEY_DOWN){
-				scrollSettingsY += 100;
-				if (scrollSettingsY > 100){
-					scrollSettingsY = 0;
-				}
-			}
-			else if (key == GLUT_KEY_RIGHT && scrollSettingsY == 0){
-				if (optionMusicOn){
-					optionMusicOff = true;
-					optionMusicOn = false;
-				}
-				else if (optionMusicOff){
-					optionMusicOff = false;
-					optionMusicOn = true;
-				}
-			}
-			else if (key == GLUT_KEY_LEFT && scrollSettingsY == 0){
-				if (optionMusicOn){
-					optionMusicOff = true;
-					optionMusicOn = false;
-				}
-				else if (optionMusicOff){
-					optionMusicOff = false;
-					optionMusicOn = true;
-				}
-			}
-			if (key == GLUT_KEY_RIGHT && scrollSettingsY == 100){
-
-				if (optionDifficulityLow){
-					optionDifficulityLow = false;
-					optionDifficulityMedium = true;
-					optionDifficulityHigh = false;
-				}
-				else if (optionDifficulityMedium){
-					optionDifficulityLow = false;
-					optionDifficulityMedium = false;
-					optionDifficulityHigh = true;
-				}
-				else if (optionDifficulityHigh){
-					optionDifficulityLow = true;
-					optionDifficulityMedium = false;
-					optionDifficulityHigh = false;
-				}
-			}
-			if (key == GLUT_KEY_LEFT && scrollSettingsY == 100){
-				if (optionDifficulityMedium){
-					optionDifficulityLow = true;
-					optionDifficulityMedium = false;
-					optionDifficulityHigh = false;
-				}
-				else if (optionDifficulityLow){
-					optionDifficulityLow = false;
-					optionDifficulityMedium = false;
-					optionDifficulityHigh = true;
-				}
-				else if (optionDifficulityHigh){
-					optionDifficulityLow = false;
-					optionDifficulityMedium = true;
-					optionDifficulityHigh = false;
-				}
-			}
+		if (key == 'l')
+		{
+			gameOver = true;
 
 		}
-
-		if (currentPage != "homePage"){
-			if (key == GLUT_KEY_END){
-				currentPage = "homePage";
-			}
+	}
+	else if (currentPage == "gameOverPage"){
+		if (key){
+			currentPage = "homePage";
 		}
-
 
 	}
+
+
+}
+
+/*
+function iSpecialKeyboard() is called whenver user hits special keys like-
+function keys, home, end, pg up, pg down, arraows etc. you have to use
+appropriate constants to detect them. A list is:
+GLUT_KEY_F1, GLUT_KEY_F2, GLUT_KEY_F3, GLUT_KEY_F4, GLUT_KEY_F5, GLUT_KEY_F6,
+GLUT_KEY_F7, GLUT_KEY_F8, GLUT_KEY_F9, GLUT_KEY_F10, GLUT_KEY_F11, GLUT_KEY_F12,
+GLUT_KEY_LEFT, GLUT_KEY_UP, GLUT_KEY_RIGHT, GLUT_KEY_DOWN, GLUT_KEY_PAGE UP,
+GLUT_KEY_PAGE DOWN, GLUT_KEY_HOME, GLUT_KEY_END, GLUT_KEY_INSERT
+*/
+void iSpecialKeyboard(unsigned char key)
+{
+	if (currentPage == "homePage"){
+
+	}
+	else if (currentPage == "userPage"){
+		if (key == GLUT_KEY_INSERT){
+			takeInput = false;
+			newG = true;
+			currentPage = "newGame";
+		}
+	}
+	else if (currentPage == "newGame"){
+		if (key == GLUT_KEY_RIGHT)
+		{
+			charecterX += 285;
+			if (charecterX > 720)
+				charecterX = 720;
+
+		}
+		if (key == GLUT_KEY_LEFT)
+		{
+			charecterX -= 285;
+			if (charecterX < 150)
+				charecterX = 150;
+
+		}
+		if (key == GLUT_KEY_UP){
+			if (!jump)
+				jump = true;
+		}
+	}
+
+	else if (currentPage == "help"){
+		if (key == GLUT_KEY_UP){
+			scrollY -= 25;
+		}
+		if (key == GLUT_KEY_DOWN){
+			scrollY += 25;
+		}
+	}
+	if (currentPage == "settings"){
+		if (key == GLUT_KEY_UP){
+			scrollSettingsY -= 100;
+			if (scrollSettingsY < 0){
+				scrollSettingsY = 100;
+			}
+
+		}
+		else if (key == GLUT_KEY_DOWN){
+			scrollSettingsY += 100;
+			if (scrollSettingsY > 100){
+				scrollSettingsY = 0;
+			}
+		}
+		else if (key == GLUT_KEY_RIGHT && scrollSettingsY == 0){
+			if (optionMusicOn){
+				optionMusicOff = true;
+				optionMusicOn = false;
+			}
+			else if (optionMusicOff){
+				optionMusicOff = false;
+				optionMusicOn = true;
+			}
+		}
+		else if (key == GLUT_KEY_LEFT && scrollSettingsY == 0){
+			if (optionMusicOn){
+				optionMusicOff = true;
+				optionMusicOn = false;
+			}
+			else if (optionMusicOff){
+				optionMusicOff = false;
+				optionMusicOn = true;
+			}
+		}
+		if (key == GLUT_KEY_RIGHT && scrollSettingsY == 100){
+
+			if (optionDifficulityLow){
+				optionDifficulityLow = false;
+				optionDifficulityMedium = true;
+				optionDifficulityHigh = false;
+			}
+			else if (optionDifficulityMedium){
+				optionDifficulityLow = false;
+				optionDifficulityMedium = false;
+				optionDifficulityHigh = true;
+			}
+			else if (optionDifficulityHigh){
+				optionDifficulityLow = true;
+				optionDifficulityMedium = false;
+				optionDifficulityHigh = false;
+			}
+		}
+		if (key == GLUT_KEY_LEFT && scrollSettingsY == 100){
+			if (optionDifficulityMedium){
+				optionDifficulityLow = true;
+				optionDifficulityMedium = false;
+				optionDifficulityHigh = false;
+			}
+			else if (optionDifficulityLow){
+				optionDifficulityLow = false;
+				optionDifficulityMedium = false;
+				optionDifficulityHigh = true;
+			}
+			else if (optionDifficulityHigh){
+				optionDifficulityLow = false;
+				optionDifficulityMedium = true;
+				optionDifficulityHigh = false;
+			}
+		}
+
+	}
+
+	if (currentPage != "homePage"){
+		if (key == GLUT_KEY_END){
+			currentPage = "homePage";
+		}
+	}
+
+
+}
 
 
 int main()
 {
-	int runTimer = iSetTimer(100, run);
-	int roadTimer = iSetTimer(100, moveRoad);
-	int virusFactoryTimer = iSetTimer(1500, virusFactory);
+	//int runTimer = iSetTimer(0, run);
+	roadTimer = iSetTimer(100, moveRoad);
+	virusFactoryTimer = iSetTimer(1500, virusFactory);
+
 	srand((unsigned)time(NULL));
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations

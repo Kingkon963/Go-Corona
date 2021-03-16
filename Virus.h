@@ -34,3 +34,7 @@ struct Virus{
 		}
 	}
 };
+
+
+Virus virus;
+list<Virus> activeViruses;
