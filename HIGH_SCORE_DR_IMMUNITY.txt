@@ -1,3 +1,4 @@
+ij	1005
 sad	383
 asd	368
 asdf	285
@@ -6,7 +7,6 @@ iug	227
 juyfg	169
 jffkfkkf	18
 jjff	15
-sd	1
 dsa	1
 asd	1
 juyfg	1
@@ -21,6 +21,10 @@ asdf	1
 Niam	1
 ug	1
 asd	1
+as	1
+hn	1
+ij	1
+sd	1
 Unknown	0
 Unknown	0
 Unknown	0

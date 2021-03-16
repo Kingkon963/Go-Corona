@@ -1,5 +1,5 @@
 void newGame(){
-
+	iResumeTimer(virusFactoryTimer);
 
 	if (musicOn == true && optionMusicOn == true && gameOver == false)
 

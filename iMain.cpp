@@ -46,6 +46,10 @@ int ix = 0, iy = 0;
 
 int mpx, mpy, count = 0;
 
+// TIMER
+int virusFactoryTimer;
+int roadTimer;
+
 string currentPage = "homePage";
 
 //char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
@@ -806,8 +810,9 @@ void iSpecialKeyboard(unsigned char key)
 int main()
 {
 	//int runTimer = iSetTimer(0, run);
-	int roadTimer = iSetTimer(100, moveRoad);
-	int virusFactoryTimer = iSetTimer(1500, virusFactory);
+	roadTimer = iSetTimer(100, moveRoad);
+	virusFactoryTimer = iSetTimer(1500, virusFactory);
+
 	srand((unsigned)time(NULL));
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations
