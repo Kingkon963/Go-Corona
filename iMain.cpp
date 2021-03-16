@@ -124,13 +124,13 @@ int difficulityStateIndex = 0;
 
 
 void setHigh(char*, long int);
-void showhigh();
+void showHigh();
 
 void show(long int ,int ,int );
 
 int getPercentage(int, int);
 void background();
-void homepage();
+void homePage();
 void lifeIndicator(int);
 void run();
 void moveRoad();
@@ -141,52 +141,13 @@ int lineCount();
 void rankScore();
 
 void showExplosion();
+void showCloud();
+void collision();
 void sun();
 void loadImages();
 void virusFactory();
 
 
-#include "Menu.h";
-
-struct Track{
-	double x1, x2, y1, y2;
-	double x, y, m;
-	bool trackEnded = false;
-	Track(){}
-	Track(double x1, double y1, double x2, double y2){
-		this->x1 = x1;
-		this->y1 = y1;
-		this->x2 = x2;
-		this->y2 = y2;
-
-		this->x = x1;
-
-		this->m = (y2 - y1) / (x2 - x1);
-	}
-
-	double getX(){
-		return x;
-	}
-
-	double getY(){
-		return abs(m*(x - x1) + y1);
-	}
-
-	void speed(double dx){
-		if (x1 > x2){
-			x -= dx;
-			if (x <= x2) trackEnded = true;
-		}
-		else if (x1 < x2){
-			x += dx;
-			if (x >= x2) trackEnded = true;
-		}
-		else{
-			cout << "Slope is Zero!" << endl;
-		}
-
-	}
-};
 
 
 struct playerData{
@@ -195,7 +156,11 @@ struct playerData{
 };
 
 
-#include "Virus.h"
+
+#include "Track.h";
+#include "Virus.h";
+#include "Menu.h";
+#include "Navigation.h";
 
 /***************************Function For SHowing Explosion********************/
 void showExplosion()
@@ -334,15 +299,9 @@ void loadImages(){
 
 
 
-MenuItem menuItems[5];
-Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
 
-Track lt(442, 514, 190, 0);
-Track mt(490, 517, 450, 0);
-Track rt(538, 508, 710, 0);
 
-Virus virus;
-list<Virus> activeViruses;
+
 
 
 
@@ -500,6 +459,7 @@ void lifeIndicator(int life){
 			dx += 60;
 		}
 	}
+}
 
 void run(){
 	runningIndex++;
@@ -553,15 +513,6 @@ void virusFactory(){
 }
 
 
-
-
-
-/************************************************************************NEW GAME****************************************/
-
-#include "Navigation.h";
-
-
-//bool user = true;
 
 void iDraw()
 {
