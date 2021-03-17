@@ -24,7 +24,7 @@ void newGame(){
 		for (list<Virus>::iterator virus = activeViruses.begin(); virus != activeViruses.end(); virus++){
 			virus->spawn();
 
-			if ((virus->track.getX() + 110 > charecterX&&virus->track.getX() - 110<charecterX) && virus->track.getY() < charecterY + 100 && virus->hide == false)
+			if ((virus->track.getX() + 110 > charecterX&&virus->track.getX() - 110<charecterX) && virus->track.getY() < charecterY + 100 && virus->hide == false && !jump)
 			{
 				life--;
 				isCollision = true;
@@ -52,9 +52,10 @@ void newGame(){
 		//iShowBMP2(charecterX, charecterY + jumpY, "images//b14.bmp", 0);
 		iShowImage(charecterX, charecterY + jumpY, 170, 280, charecterImg[runningIndex]);
 		jumpY += 20;
-		iDelayMS(10);
+
 		if (jumpY > 200)
 		{
+			//jumpY -= 20;
 			jump = false;
 			jumpY = 0;
 		}

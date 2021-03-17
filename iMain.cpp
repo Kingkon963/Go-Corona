@@ -171,6 +171,7 @@ struct playerData{
 void showExplosion()
 {
 	if (isCollision == true){
+		PlaySound(TEXT("Sounds/collision.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		int id = iLoadImage(explosion[explosionIndex++]);
 		if (explosionIndex > 21)
 		{
@@ -304,7 +305,7 @@ void loadImages(){
 		charecterImageAddress = "images/charecter/";
 		charecterImageAddress += to_string(i+1);
 		charecterImageAddress += ".png";
-		//cout << charecterImageAddress << endl;
+
 		charecterImg[i] = iLoadImage((char *)charecterImageAddress.c_str());
 	}
 }
