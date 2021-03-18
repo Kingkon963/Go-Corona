@@ -3,9 +3,10 @@ void gameOverPage(){
 	life = 3;
 	activeViruses.clear();
 	isCollision = false;
+	BASS_ChannelPause(runningSound);
 
 	if (optionMusicOn == true && gameOver == true && gameOverSound == true){
-		PlaySound("SOUNDS\\gameover.WAV", NULL, 1);
+		PlaySound("SOUNDS\\gameover.wav", NULL, 1);
 		gameOverSound = false;
 
 	}

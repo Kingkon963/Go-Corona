@@ -4,7 +4,8 @@ void newGame(){
 	if (musicOn == true && optionMusicOn == true && gameOver == false)
 
 	{
-		PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
+		//PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
+		BASS_ChannelPlay(runningSound, true);
 
 		musicOn = false;
 	}
@@ -26,6 +27,7 @@ void newGame(){
 
 			if ((virus->track.getX() + 110 > charecterX&&virus->track.getX() - 110<charecterX) && virus->track.getY() < charecterY + 100 && virus->hide == false && !jump)
 			{
+				BASS_ChannelPlay(collisionSound, false);
 				life--;
 				isCollision = true;
 				virus->hide = true;

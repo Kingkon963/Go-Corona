@@ -8,6 +8,7 @@
 #include <list>
 #include<windows.h>
 #include <time.h>
+#include <bass/bass.h>
 
 using namespace std;
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Idraw Here::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -17,6 +18,9 @@ using namespace std;
 #define Y1 264
 #define Y2 416
 #define GH 1 ///////// for high score////////////
+
+HSTREAM runningSound, collisionSound;
+
 bool skip = false;
 bool newG = false;
 bool gameOver = false;
@@ -171,7 +175,7 @@ struct playerData{
 void showExplosion()
 {
 	if (isCollision == true){
-		PlaySound(TEXT("Sounds/collision.wav"), NULL, SND_FILENAME | SND_ASYNC);
+
 		int id = iLoadImage(explosion[explosionIndex++]);
 		if (explosionIndex > 21)
 		{
@@ -308,6 +312,10 @@ void loadImages(){
 
 		charecterImg[i] = iLoadImage((char *)charecterImageAddress.c_str());
 	}
+}
+void loadSounds() {
+	runningSound = BASS_StreamCreateFile(false, "Sounds/runSound.wav", 0, 0, BASS_SAMPLE_LOOP);
+	collisionSound = BASS_StreamCreateFile(false, "Sounds/collision.wav", 0, 0, BASS_SAMPLE_MONO);
 }
 
 void setHigh(char* player, long int scr) {
@@ -818,6 +826,12 @@ int main()
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations
 	loadImages();
+
+	if (!BASS_Init(-1, 44100, 0, NULL, NULL))
+		cout << "Failed in BASS_Init" << endl;
+
+	loadSounds();
+
 	iStart();
 	return 0;
 }
