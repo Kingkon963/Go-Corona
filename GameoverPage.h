@@ -1,5 +1,6 @@
 void gameOverPage(){
-
+	activeViruses.clear();
+	isCollision = false;
 	life = 3;
 	if (optionMusicOn == true && gameOver == true && gameOverSound == true){
 		PlaySound("SOUNDS\\gameover.WAV", NULL, 1);
@@ -27,5 +28,5 @@ void gameOverPage(){
 	show(universalScoreVar, 465, 200);
 	//iText(400, 210,p, GLUT_BITMAP_TIMES_ROMAN_24);
 	iText(300, 70, "PRESS ANY KEY TO RETURN HOME", GLUT_BITMAP_TIMES_ROMAN_24);
-	gameOver = false;
-}
+gameOver = false;
+}	

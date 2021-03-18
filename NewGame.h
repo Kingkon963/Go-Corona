@@ -1,4 +1,5 @@
 void newGame(){
+	
 	iResumeTimer(virusFactoryTimer);
 
 	if (musicOn == true && optionMusicOn == true && gameOver == false)
@@ -26,6 +27,7 @@ void newGame(){
 
 			if ((virus->track.getX() + 110 > charecterX&&virus->track.getX() - 110<charecterX) && virus->track.getY() < charecterY + 100 && virus->hide == false)
 			{
+				
 				life--;
 				isCollision = true;
 				virus->hide = true;
@@ -52,7 +54,7 @@ void newGame(){
 		//iShowBMP2(charecterX, charecterY + jumpY, "images//b14.bmp", 0);
 		iShowImage(charecterX, charecterY + jumpY, 170, 280, charecterImg[runningIndex]);
 		jumpY += 20;
-		iDelayMS(10);
+	
 		if (jumpY > 200)
 		{
 			jump = false;

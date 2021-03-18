@@ -32,6 +32,7 @@ char* hoverImg[5] = { "images//help1.bmp", "images//hover4.bmp", "images//hover3
 int randomTrack, prevTrack = -1;
 int index0 = 0;
 int in = 0;
+int helpImg;
 char userName[1000];
 
 char s[100];
@@ -171,6 +172,8 @@ struct playerData{
 void showExplosion()
 {
 	if (isCollision == true){
+		
+	
 		int id = iLoadImage(explosion[explosionIndex++]);
 		if (explosionIndex > 21)
 		{
@@ -299,7 +302,7 @@ void loadImages(){
 	virusImg = iLoadImage("images/virus.png");
 	virusImg75 = iLoadImage("images/virus75.png");
 	virusImg100 = iLoadImage("images/virus100.png");
-
+	helpImg = iLoadImage("images/help.png");
 	for (int i = 0; i < 21; i++){
 		charecterImageAddress = "images/charecter/";
 		charecterImageAddress += to_string(i+1);
@@ -812,7 +815,7 @@ int main()
 	//int runTimer = iSetTimer(0, run);
 	roadTimer = iSetTimer(100, moveRoad);
 	virusFactoryTimer = iSetTimer(1500, virusFactory);
-
+	                     
 	srand((unsigned)time(NULL));
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations
