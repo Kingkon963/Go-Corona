@@ -668,7 +668,6 @@ void iMouse(int button, int state, int mx, int my)
 			}
 			else if (currentPage == "newGame"){
 				if (mx < 100 && my < 690 && my > 640){
-			
 					currentPage = "pauseMenu";
 
 				}
