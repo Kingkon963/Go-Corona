@@ -1,4 +1,5 @@
 void newGame(){
+	
 	iResumeTimer(virusFactoryTimer);
 
 	if (musicOn == true && optionMusicOn == true && gameOver == false)
@@ -56,6 +57,7 @@ void newGame(){
 		iShowImage(charecterX, charecterY + jumpY, 170, 280, charecterImg[runningIndex]);
 		jumpY += 20;
 
+	
 		if (jumpY > 200)
 		{
 			//jumpY -= 20;
