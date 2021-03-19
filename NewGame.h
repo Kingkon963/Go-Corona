@@ -2,11 +2,11 @@ void newGame(){
 	
 	iResumeTimer(virusFactoryTimer);
 
-	if (pause == false && musicOn == true && optionMusicOn == true && gameOver == false)
+	if (musicOn == true && optionMusicOn == true && gameOver == false)
 
 	{
-		PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
-		//BASS_ChannelPlay(runningSound, true);
+		//PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
+		BASS_ChannelPlay(runningSound, true);
 
 		musicOn = false;
 	}
