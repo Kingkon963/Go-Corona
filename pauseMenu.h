@@ -86,6 +86,7 @@ MenuItem2 menuItems2[5];
 Menu2 menu2(300, 200, 400, 50, menuItems2, totalMenuItems2);
 void pauseMenu(){
 	pause = true;
+        BASS_ChannelPause(runningSound);
 	iPauseTimer(virusFactoryTimer);
 	iShowBMP(0, 0, "images//bg.bmp");
 	menu2.display2();
