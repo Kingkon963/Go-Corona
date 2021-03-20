@@ -8,6 +8,7 @@
 #include <list>
 #include<windows.h>
 #include <time.h>
+#include <bass/bass.h>
 
 using namespace std;
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Idraw Here::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -17,13 +18,16 @@ using namespace std;
 #define Y1 264
 #define Y2 416
 #define GH 1 ///////// for high score////////////
+
+HSTREAM runningSound, collisionSound;
+
 bool skip = false;
 bool newG = false;
 bool gameOver = false;
 bool inDis = true;
 bool takeInput = true; //logic for input user name
 bool takeScore = true;
-bool showPassiveMousePosition = false;
+bool showPassiveMousePosition = true;
 //for high score
 long int  point = 0;
 int flag = 0;
@@ -129,10 +133,15 @@ bool optionDifficulityLow = true;
 bool optionDifficulityMedium = false;
 int musicStateIndex = 0;
 int difficulityStateIndex = 0;
+
 int randomTrackV;
 int randomTrackM;
 int prevTrackM;
 int maskTimer;
+
+bool pause = false;
+
+
 //charecter images
 int charecterImg[21];
 string charecterImageAddress;
@@ -171,6 +180,20 @@ struct playerData{
 };
 
 
+void gameOverLogic(){
+	if (gameOver){
+		takeScore = true;
+		gameOverSound = true;
+	}
+	if (takeScore){
+		universalScoreVar = point;
+		setHigh(userName, point);//now for testing this function is taking score after pressing 'l',, it will take score when game over
+		takeScore = false;
+	}
+	if (gameOver == true && takeScore == false){
+		currentPage = "gameOverPage";
+	}
+}
 
 #include "Track.h";
 #include "Virus.h";
@@ -181,8 +204,8 @@ struct playerData{
 void showExplosion()
 {
 	if (isCollision == true){
+
 		
-	
 		int id = iLoadImage(explosion[explosionIndex++]);
 		if (explosionIndex > 21)
 		{
@@ -293,9 +316,13 @@ void loadImages(){
 		charecterImageAddress = "images/charecter/";
 		charecterImageAddress += to_string(i+1);
 		charecterImageAddress += ".png";
-		//cout << charecterImageAddress << endl;
+
 		charecterImg[i] = iLoadImage((char *)charecterImageAddress.c_str());
 	}
+}
+void loadSounds() {
+	runningSound = BASS_StreamCreateFile(false, "Sounds/runSound.wav", 0, 0, BASS_SAMPLE_LOOP);
+	collisionSound = BASS_StreamCreateFile(false, "Sounds/collision.wav", 0, 0, BASS_SAMPLE_MONO);
 }
 
 void setHigh(char* player, long int scr) {
@@ -583,6 +610,16 @@ void iDraw()
 	else if (currentPage == "gameOverPage"){
 		gameOverPage();
 	}
+	else if (currentPage == "pauseMenu"){
+		pauseMenu();
+	}
+	else if (currentPage == "resume"){
+		currentPage = "newGame";
+	}
+	else if (currentPage == "exit"){
+		gameOver = true;
+		gameOverLogic();
+	}
 }
 
 
@@ -624,14 +661,43 @@ void iMouse(int button, int state, int mx, int my)
 					}
 				}
 			}
-			else if (currentPage != "newGame" || currentPage != "homePage"){
-				if (mx < 100 && my < 100){
-					iShowBMP2(mpx, mpy, "images//home_black.bmp", 255);
-					currentPage = "homePage";
-					scrollY = 0;
-					scrollSettingsY = 0;
+
+			if (currentPage == "pauseMenu"){
+				for (int i = 0; i < totalMenuItems; i++){
+					if (menuItems2[i].isInsideThis(mx, my)){
+						menuItems2[i].cliked();
+						break;
+					}
 				}
 			}
+			else if (currentPage != "newGame"){
+				if (!pause){
+					if (mx < 100 && my < 100){
+						iShowBMP2(mpx, mpy, "images//home_black.bmp", 255);
+						currentPage = "homePage";
+						scrollY = 0;
+						scrollSettingsY = 0;
+					}
+				}
+				else{
+					if (mx < 100 && my < 100){
+						iShowBMP2(mpx, mpy, "images//home_black.bmp", 255);
+						currentPage = "pauseMenu";
+						scrollY = 0;
+						scrollSettingsY = 0;
+					}
+				}
+				
+			}
+			else if (currentPage == "newGame"){
+				if (mx < 100 && my < 690 && my > 640){
+			
+					currentPage = "pauseMenu";
+
+				}
+			}
+			
+		
 		}
 
 
@@ -844,6 +910,12 @@ int main()
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations
 	loadImages();
+
+	if (!BASS_Init(-1, 44100, 0, NULL, NULL))
+		cout << "Failed in BASS_Init" << endl;
+
+	loadSounds();
+
 	iStart();
 	return 0;
 }

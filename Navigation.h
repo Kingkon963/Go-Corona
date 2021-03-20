@@ -11,3 +11,4 @@ void background()
 #include "HelpPage.h";
 #include "CreditPage.h";
 #include "GameoverPage.h";
+#include "pauseMenu.h";
