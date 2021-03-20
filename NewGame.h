@@ -1,13 +1,10 @@
 void newGame(){
 	iResumeTimer(virusFactoryTimer);
 
-	if ((musicOn == true && optionMusicOn == true && gameOver == false) || (pause && optionMusicOn == true && gameOver == false))
+        iResumeTimer(maskTimer);
 
-	iResumeTimer(maskTimer);
-
-	if (musicOn == true && optionMusicOn == true && gameOver == false)
-
-
+	
+       if ((musicOn == true && optionMusicOn == true && gameOver == false) || (pause && optionMusicOn == true && gameOver == false))
 	{
 		//PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
 		BASS_ChannelPlay(runningSound, true);
