@@ -29,5 +29,6 @@ void settings(){
 	iText(470, 475, difficulityState[difficulityStateIndex], GLUT_BITMAP_TIMES_ROMAN_24);
 	iText(300, 275, "PRESS ARROW KEYS TO NAVIGATE", GLUT_BITMAP_TIMES_ROMAN_24);
 	//iShowBMP2(370, 600, "images//22.bmp", 0);
-	iShowBMP2(10, 10, "images//home.bmp", 0);
+	if (!pause) { iShowBMP2(10, 10, "images//home.bmp", 0); }
+	else{ iShowBMP2(10, 10, "images//back.bmp", 0); }
 }
