@@ -10,6 +10,7 @@ sad	383
 asd	368
 omi	350
 omi	333
+omi	331
 g	325
 omi	322
 omi	313
@@ -25,8 +26,8 @@ omi	250
 omi	247
 omi	233
 i	231
-iug	227
 omi	227
+iug	227
 n	226
 omi	222
 omi	220
@@ -40,7 +41,6 @@ omi	105
 omi	72
 jffkfkkf	18
 jjff	15
-asd	1
 omi	1
 sad	1
 asdf	1
@@ -102,6 +102,8 @@ omi	1
 omi	1
 omi	1
 sdf	1
+omi	1
+asd	1
 Unknown	0
 Unknown	0
 Unknown	0
