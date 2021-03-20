@@ -39,6 +39,14 @@ void newGame(){
 	}
 
 
+	if (!activeMasks.empty()){
+		for (list<Mask>::iterator mask = activeMasks.begin(); mask != activeMasks.end(); mask++){
+			mask->spawn();
+			
+			
+		}
+	}
+
 
 
 
