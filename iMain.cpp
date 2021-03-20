@@ -651,7 +651,9 @@ void iMouse(int button, int state, int mx, int my)
 	{
 		if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 		{
-			PlaySound("Sounds\\click.wav", NULL, SND_ASYNC);
+			if (currentPage != "gameOverPage"){
+				PlaySound("Sounds\\click.wav", NULL, SND_ASYNC);
+			}
 
 			if (currentPage == "homePage"){
 				for (int i = 0; i < totalMenuItems; i++){
@@ -690,13 +692,11 @@ void iMouse(int button, int state, int mx, int my)
 				
 			}
 			else if (currentPage == "newGame"){
-				if (mx < 100 && my < 690 && my > 640){
-			
+				if (mx < 100 && my < 700 && my > 630){
 					currentPage = "pauseMenu";
 
 				}
 			}
-			
 		
 		}
 

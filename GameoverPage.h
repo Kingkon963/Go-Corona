@@ -2,8 +2,6 @@ void gameOverPage(){
 	activeViruses.clear();
 	isCollision = false;
 	life = 3;
-	activeViruses.clear();
-	isCollision = false;
 	BASS_ChannelPause(runningSound);
 
 	if (optionMusicOn == true && gameOver == true && gameOverSound == true){
