@@ -1,6 +1,12 @@
 void newGame(){
 	iResumeTimer(virusFactoryTimer);
+
 	if ((musicOn == true && optionMusicOn == true && gameOver == false) || (pause && optionMusicOn == true && gameOver == false))
+
+	iResumeTimer(maskTimer);
+
+	if (musicOn == true && optionMusicOn == true && gameOver == false)
+
 
 	{
 		//PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
@@ -42,6 +48,14 @@ void newGame(){
 		}
 	}
 
+
+	if (!activeMasks.empty()){
+		for (list<Mask>::iterator mask = activeMasks.begin(); mask != activeMasks.end(); mask++){
+			mask->spawn();
+			
+			
+		}
+	}
 
 
 
