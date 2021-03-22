@@ -5,11 +5,10 @@ void newGame(){
 
 	{
 		//PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
-		BASS_ChannelPlay(runningSound, true);
+		BASS_ChannelPlay(runningSound, false);
 
 		musicOn = false;
 	}
-
 
 
 	iShowBMP(0, 524, "images//sky.bmp");
