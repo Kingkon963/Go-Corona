@@ -4,7 +4,6 @@
 #include <iostream>
 #include <array>
 #include <string>
-//#include <vector>
 #include <list>
 #include<windows.h>
 #include <time.h>
@@ -37,6 +36,7 @@ char* hoverImg[5] = { "images//help1.bmp", "images//hover4.bmp", "images//hover3
 int randomTrack, prevTrack = -1;
 int index0 = 0;
 int in = 0;
+double getSpeedByDifficulty[3][3] = { { 1.5, 2, 2.5 }, { .3, .35, .4 }, { 1, 1.5, 2 } };
 
 char userName[1000];
 char s[100];
@@ -137,8 +137,8 @@ bool optionDifficulityMedium = false;
 int musicStateIndex = 0;
 int difficulityStateIndex = 0;
 int stBG;
-int randomTrackV;
-int randomTrackM;
+int randomTrackV = -1;
+int randomTrackM = -1;
 int prevTrackM;
 int maskTimer;
 bool mainSong = true;
@@ -507,8 +507,11 @@ void moveRoad(){
 }
 
 void moveCharecter(){
-	runningIndex++;
-	if (runningIndex >= 20) runningIndex = 0;
+	if (!jump){
+		runningIndex++;
+		if (runningIndex >= 20) runningIndex = 0;
+	}
+
 }
 
 
@@ -524,17 +527,17 @@ void virusFactory(){
 	switch (randomTrackV){
 	case 0:
 		virus.track = lt;
-		virus.speed = 1.5;
+		virus.speed = getSpeedByDifficulty[0][difficulityStateIndex];
 		prevTrack = 0;
 		break;
 	case 1:
 		virus.track = mt;
-		virus.speed = .3;
+		virus.speed = getSpeedByDifficulty[1][difficulityStateIndex];
 		prevTrack = 1;
 		break;
 	case 2:
 		virus.track = rt;
-		virus.speed = 1;
+		virus.speed = getSpeedByDifficulty[2][difficulityStateIndex];
 		prevTrack = 2;
 		break;
 	default:
@@ -544,7 +547,7 @@ void virusFactory(){
 	cout << virus.hide << endl;
 	activeViruses.push_back(virus);
 
-	if (activeViruses.size() == 10) {
+	if (activeViruses.size() == 30) {
 		activeViruses.pop_front();
 	}
 
@@ -557,17 +560,17 @@ void maskFactory(){
 	switch (randomTrackM){
 	case 0:
 		mask.trackM = lt;
-		mask.speedM = 1.5;
+		mask.speedM = getSpeedByDifficulty[0][difficulityStateIndex];
 		prevTrackM = 0;
 		break;
 	case 1:
 		mask.trackM = mt;
-		mask.speedM = .3;
+		mask.speedM = getSpeedByDifficulty[1][difficulityStateIndex];
 		prevTrackM = 1;
 		break;
 	case 2:
 		mask.trackM = rt;
-		mask.speedM = 1;
+		mask.speedM = getSpeedByDifficulty[2][difficulityStateIndex];
 		prevTrackM = 2;
 		break;
 	default:
@@ -925,8 +928,8 @@ int main()
 	//int runTimer = iSetTimer(0, run);
 	roadTimer = iSetTimer(100, moveRoad);
 	charecterTimer = iSetTimer(10, moveCharecter);
-	virusFactoryTimer = iSetTimer(1500, virusFactory);
-	maskTimer = iSetTimer(1500,maskFactory);
+	virusFactoryTimer = iSetTimer(1000, virusFactory);
+	maskTimer = iSetTimer(30000,maskFactory);
 
 	srand((unsigned)time(NULL));
 
