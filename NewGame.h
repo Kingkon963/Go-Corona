@@ -12,10 +12,12 @@ void newGame(){
 	
     if ((musicOn == true && optionMusicOn == true && gameOver == false) || (pause && optionMusicOn == true && gameOver == false))
 	{
-		//PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
-		BASS_ChannelPlay(runningSound, true);
+		if (!jump){
+			BASS_ChannelPlay(runningSound, false);
+			cout << "Sound Resumed... " << jump << endl;
+		}
 	
-		musicOn = false;
+		//musicOn = false;
 		pause = false;
 		
 	}
@@ -46,7 +48,7 @@ void newGame(){
 		for (list<Virus>::iterator virus = activeViruses.begin(); virus != activeViruses.end(); virus++){
 			virus->spawn();
 
-			if ((virus->track.getX() + 110 > charecterX&&virus->track.getX() - 110 < charecterX) && virus->track.getY() < charecterY + 100 && virus->hide == false && !jump)
+			if ((virus->track.getX() + 110 > charecterX && virus->track.getX() - 110 < charecterX) && virus->track.getY() < charecterY + 100 && virus->hide == false && !jump)
 			{
 				if (optionMusicOn){
 					BASS_ChannelPlay(collisionSound, false);
@@ -64,6 +66,7 @@ void newGame(){
 
 	if (!activeMasks.empty()){
 		for (list<Mask>::iterator mask = activeMasks.begin(); mask != activeMasks.end(); mask++){
+
 			mask->spawn();
 			if ((mask->trackM.getX() + 110 > charecterX&&mask->trackM.getX() - 110 < charecterX) && mask->trackM.getY() < charecterY + 100 && mask->hideM == false && !jump)
 			{
@@ -76,16 +79,10 @@ void newGame(){
 		}
 	}
 
-			
-		
-	
-
-
 
 
 	if (!jump)
 	{
-		jumpIndex = 0;
 		//iShowBMP2(charecterX, charecterY, charecterImg[runningIndex], 0);
 		iShowImage(charecterX, charecterY, 170, 280, charecterImg[runningIndex]);
 	}
@@ -96,9 +93,6 @@ void newGame(){
 		//iShowBMP2(charecterX, charecterY + jumpY, "images//b14.bmp", 0);
 		iShowImage(charecterX, charecterY + jumpY, 170, 280, charecterImg[runningIndex]);
 		
-
-		
-	
 		if (jumpIndex == 0)
 		{
 			jumpY += 10;
@@ -110,8 +104,8 @@ void newGame(){
 			jumpY -= 10;
 			if (jumpY < 0)
 			{
-				jumpIndex = 2;
-			
+				jumpIndex = 0;
+
 				jumpY = 0;
 				jump = false;
 			}
@@ -120,8 +114,6 @@ void newGame(){
 
 	}
 	
-	runningIndex++;
-	if (runningIndex >= 20) runningIndex = 0;
 
 	//iLine(240, 140, 442, 514);
 	point++;// SHOULD BE CHANGED

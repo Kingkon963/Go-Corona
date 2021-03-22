@@ -54,7 +54,7 @@ int mpx, mpy, count = 0;
 
 // TIMER
 int virusFactoryTimer;
-int roadTimer;
+int roadTimer, charecterTimer;
 
 string currentPage = "homePage";
 
@@ -101,6 +101,8 @@ int maskImg;
 int maskImg75;
 int maskImg100;
 
+int logoImg, homeImg;
+
 int life = 3;
 int roadIndex = 3;
 bool musicOn = true;
@@ -110,7 +112,7 @@ int charecterX = (windowWidth / 2) - 80;
 int charecterY = 10;
 bool jump = false;
 int jumpY = 0;
-int max_jumpY = 100;
+int max_jumpY = 200;
 int scrollY = 0;
 int universalScoreVar = 0;
 double cloudY = 534;
@@ -314,7 +316,11 @@ void loadImages(){
 	 maskImg75 = iLoadImage("images/maskImg75.png");
 	 maskImg100 = iLoadImage("images/maskImg100.png");
 	 stBG = iLoadImage("images/SOFTWARE DEVELPOMENT-1 (6).png");
-	for (int i = 0; i < 21; i++){
+
+	 logoImg = iLoadImage("images/logo.png");
+	 homeImg = iLoadImage("images/home.jpg");
+	
+	 for (int i = 0; i < 21; i++){
 		charecterImageAddress = "images/charecter/";
 		charecterImageAddress += to_string(i+1);
 		charecterImageAddress += ".png";
@@ -327,6 +333,10 @@ void loadSounds() {
 	collisionSound = BASS_StreamCreateFile(false, "Sounds/collision.wav", 0, 0, BASS_SAMPLE_MONO);
 	themeSong1 = BASS_StreamCreateFile(false, "Sounds/themeSong1.wav", 0, 0, BASS_SAMPLE_LOOP);
 	themeSong2 = BASS_StreamCreateFile(false, "Sounds/themeSong2.wav", 0, 0, BASS_SAMPLE_LOOP);
+
+	BASS_ChannelSetAttribute(runningSound, BASS_ATTRIB_VOL, 1);
+	BASS_ChannelSetAttribute(collisionSound, BASS_ATTRIB_VOL, .3);
+	BASS_ChannelSetAttribute(themeSong1, BASS_ATTRIB_VOL, .3);
 }
 
 void setHigh(char* player, long int scr) {
@@ -494,7 +504,11 @@ void run(){
 void moveRoad(){
 	roadIndex--;
 	if (roadIndex <= 0) roadIndex = 3;
+}
 
+void moveCharecter(){
+	runningIndex++;
+	if (runningIndex >= 20) runningIndex = 0;
 }
 
 
@@ -505,7 +519,7 @@ void sun(){
 }
 void virusFactory(){
 	 randomTrackV = rand() % 3;
-	while (randomTrackV == prevTrack) randomTrackV = rand() % 3;
+	while (randomTrackV == prevTrack || randomTrackV == randomTrackM) randomTrackV = rand() % 3;
 
 	switch (randomTrackV){
 	case 0:
@@ -524,7 +538,7 @@ void virusFactory(){
 		prevTrack = 2;
 		break;
 	default:
-		cout << "Error in generating randomTrack" << endl;
+		cout << "Error in generating randomTrack for Virus" << endl;
 	}
 
 	cout << virus.hide << endl;
@@ -538,7 +552,7 @@ void virusFactory(){
 }
 void maskFactory(){
 	randomTrackM = rand() % 3;
-	while (randomTrackM == prevTrackM&&randomTrackV==randomTrackM) randomTrackM = rand() % 3;
+	while (randomTrackM == prevTrackM || randomTrackM == randomTrackV) randomTrackM = rand() % 3;
 
 	switch (randomTrackM){
 	case 0:
@@ -557,20 +571,18 @@ void maskFactory(){
 		prevTrackM = 2;
 		break;
 	default:
-		cout << "Error in generating randomTrack" << endl;
+		cout << "Error in generating randomTrack for Mask" << endl;
 	}
 
 
 	activeMasks.push_back(mask);
 
-	if (activeMasks.size() == 4) {
+	if (activeMasks.size() == 10) {
 		activeMasks.pop_front();
 	}
 
 
 }
-
-
 
 void iDraw()
 {
@@ -810,8 +822,11 @@ void iSpecialKeyboard(unsigned char key)
 
 		}
 		if (key == GLUT_KEY_UP){
-			if (!jump)
+			if (!jump){
 				jump = true;
+				BASS_ChannelPause(runningSound);
+				cout << "Sound Paused..." << jump << endl;
+			}
 		}
 	}
 
@@ -909,11 +924,15 @@ int main()
 {
 	//int runTimer = iSetTimer(0, run);
 	roadTimer = iSetTimer(100, moveRoad);
+	charecterTimer = iSetTimer(10, moveCharecter);
 	virusFactoryTimer = iSetTimer(1500, virusFactory);
-	maskTimer = iSetTimer(15000,maskFactory);
+	maskTimer = iSetTimer(1500,maskFactory);
+
 	srand((unsigned)time(NULL));
+
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations
+	
 	loadImages();
 
 	if (!BASS_Init(-1, 44100, 0, NULL, NULL))

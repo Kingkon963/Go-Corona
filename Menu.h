@@ -20,7 +20,7 @@ struct MenuItem{
 		return (mx >= x && mx <= (x + width)) && (my >= y && my <= (y + height));
 	}
 	void display(){
-		iShowBMP2(x + getPercentage(width, 0), y + getPercentage(height, 40), backgroundImg, 0);
+		iShowBMP2(x + getPercentage(width, 15), y + getPercentage(height, 50), backgroundImg, 0);
 		if (this->isInsideThis(mpx, mpy))
 			onHoverState = true;
 		else
@@ -29,8 +29,8 @@ struct MenuItem{
 		if (onHoverState){
 			iSetColor(0, 0, 0);
 			//	iFilledRectangle(x, y, width, height);
-			iShowBMP2(x + getPercentage(width, -7), y + getPercentage(height, 40), "images//arr.bmp", 0);
-			iShowBMP2(x + getPercentage(width, 0), y + getPercentage(height, 40), hover, 0);
+			iShowBMP2(x + getPercentage(width, 8), y + getPercentage(height, 50), "images//arr.bmp", 0);
+			iShowBMP2(x + getPercentage(width, 15), y + getPercentage(height, 50), hover, 0);
 			iSetColor(255, 255, 255);
 			if (firstEntry){
 				PlaySound("Sounds\\btn_hover.wav", NULL, SND_ASYNC);
