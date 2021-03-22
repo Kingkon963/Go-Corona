@@ -85,6 +85,9 @@ struct Menu2{
 MenuItem2 menuItems2[5];
 Menu2 menu2(300, 200, 400, 50, menuItems2, totalMenuItems2);
 void pauseMenu(){
+	BASS_ChannelPause(runningSound);
+	
+	musicOn = true;
 	pause = true;
 	iPauseTimer(virusFactoryTimer);
 	iShowBMP(0, 0, "images//bg.bmp");

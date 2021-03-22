@@ -5,7 +5,9 @@ void gameOverPage(){
 	activeViruses.clear();
 	isCollision = false;
 	BASS_ChannelPause(runningSound);
-
+	BASS_ChannelPause(themeSong2);
+	themeSong = true;
+	mainSong = true;
 	if (optionMusicOn == true && gameOver == true && gameOverSound == true){
 		PlaySound("SOUNDS\\gameover.wav", NULL, 1);
 		gameOverSound = false;

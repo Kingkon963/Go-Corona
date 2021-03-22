@@ -19,8 +19,9 @@ using namespace std;
 #define Y2 416
 #define GH 1 ///////// for high score////////////
 
-HSTREAM runningSound, collisionSound;
-
+HSTREAM runningSound, collisionSound,themeSong1,themeSong2;
+bool themeSong = true;
+int jumpIndex = 0;
 bool skip = false;
 bool newG = false;
 bool gameOver = false;
@@ -108,7 +109,7 @@ bool gameOverSound = false;
 int charecterX = (windowWidth / 2) - 80;
 int charecterY = 10;
 bool jump = false;
-int jumpY = 10;
+int jumpY = 0;
 int max_jumpY = 100;
 int scrollY = 0;
 int universalScoreVar = 0;
@@ -133,12 +134,12 @@ bool optionDifficulityLow = true;
 bool optionDifficulityMedium = false;
 int musicStateIndex = 0;
 int difficulityStateIndex = 0;
-
+int stBG;
 int randomTrackV;
 int randomTrackM;
 int prevTrackM;
 int maskTimer;
-
+bool mainSong = true;
 bool pause = false;
 
 
@@ -170,7 +171,7 @@ void collision();
 void sun();
 void loadImages();
 void virusFactory();
-
+void jumpdown();
 
 
 
@@ -311,7 +312,7 @@ void loadImages(){
      maskImg=iLoadImage("images/maskImg.png");
 	 maskImg75 = iLoadImage("images/maskImg75.png");
 	 maskImg100 = iLoadImage("images/maskImg100.png");
-
+	 stBG = iLoadImage("images/SOFTWARE DEVELPOMENT-1 (6).png");
 	for (int i = 0; i < 21; i++){
 		charecterImageAddress = "images/charecter/";
 		charecterImageAddress += to_string(i+1);
@@ -323,6 +324,8 @@ void loadImages(){
 void loadSounds() {
 	runningSound = BASS_StreamCreateFile(false, "Sounds/runSound.wav", 0, 0, BASS_SAMPLE_LOOP);
 	collisionSound = BASS_StreamCreateFile(false, "Sounds/collision.wav", 0, 0, BASS_SAMPLE_MONO);
+	themeSong1 = BASS_StreamCreateFile(false, "Sounds/themeSong1.wav", 0, 0, BASS_SAMPLE_LOOP);
+	themeSong2 = BASS_StreamCreateFile(false, "Sounds/themeSong2.wav", 0, 0, BASS_SAMPLE_LOOP);
 }
 
 void setHigh(char* player, long int scr) {
@@ -414,8 +417,9 @@ void showHigh(){
 }
 void show(long int a, int x, int y)
 {
-	char p[1000];
-	long int i, rem, count = 0, f;
+
+		char p[1000];
+long int i, rem, count = 0, f;
 	f = a;
 	while (f != 0) {
 		count++;
@@ -905,7 +909,7 @@ int main()
 	//int runTimer = iSetTimer(0, run);
 	roadTimer = iSetTimer(100, moveRoad);
 	virusFactoryTimer = iSetTimer(1500, virusFactory);
-	maskTimer = iSetTimer(10000,maskFactory);
+	maskTimer = iSetTimer(15000,maskFactory);
 	srand((unsigned)time(NULL));
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations
