@@ -1,15 +1,23 @@
 
 void newGame(){
 
+
 	BASS_ChannelPause(themeSong1);
 
-	if (musicOn == true && optionMusicOn == true && gameOver == false)
+	iResumeTimer(virusFactoryTimer);
 
+
+    iResumeTimer(maskTimer);
+
+	
+    if ((musicOn == true && optionMusicOn == true && gameOver == false) || (pause && optionMusicOn == true && gameOver == false))
 	{
 		//PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
 		BASS_ChannelPlay(runningSound, true);
 	
 		musicOn = false;
+		pause = false;
+		
 	}
 
 	if ( optionMusicOn == true && gameOver == false&& themeSong==true)
@@ -40,7 +48,9 @@ void newGame(){
 
 			if ((virus->track.getX() + 110 > charecterX&&virus->track.getX() - 110 < charecterX) && virus->track.getY() < charecterY + 100 && virus->hide == false && !jump)
 			{
-				BASS_ChannelPlay(collisionSound, false);
+				if (optionMusicOn){
+					BASS_ChannelPlay(collisionSound, false);
+				}
 				life--;
 				isCollision = true;
 				virus->hide = true;
