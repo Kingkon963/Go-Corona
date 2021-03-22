@@ -562,7 +562,7 @@ void maskFactory(){
 
 	activeMasks.push_back(mask);
 
-	if (activeMasks.size() == 4) {
+	if (activeMasks.size() == 10) {
 		activeMasks.pop_front();
 	}
 
@@ -794,14 +794,14 @@ void iSpecialKeyboard(unsigned char key)
 		}
 	}
 	else if (currentPage == "newGame"){
-		if (key == GLUT_KEY_RIGHT)
+		if (key == GLUT_KEY_RIGHT&&jump == false)
 		{
 			charecterX += 285;
 			if (charecterX > 720)
 				charecterX = 720;
 
 		}
-		if (key == GLUT_KEY_LEFT)
+		if (key == GLUT_KEY_LEFT&&jump == false)
 		{
 			charecterX -= 285;
 			if (charecterX < 150)
@@ -845,6 +845,10 @@ void iSpecialKeyboard(unsigned char key)
 				optionMusicOff = false;
 				optionMusicOn = true;
 			}
+			if (optionMusicOn == false)
+				BASS_ChannelPause(themeSong1);
+			
+		
 		}
 		else if (key == GLUT_KEY_LEFT && scrollSettingsY == 0){
 			if (optionMusicOn){
@@ -855,6 +859,8 @@ void iSpecialKeyboard(unsigned char key)
 				optionMusicOff = false;
 				optionMusicOn = true;
 			}
+			if (optionMusicOn == true)
+				BASS_ChannelPlay(themeSong1, true);
 		}
 		if (key == GLUT_KEY_RIGHT && scrollSettingsY == 100){
 
@@ -917,7 +923,7 @@ int main()
 
 	if (!BASS_Init(-1, 44100, 0, NULL, NULL))
 		cout << "Failed in BASS_Init" << endl;
-
+		
 	loadSounds();
 
 	iStart();

@@ -64,6 +64,7 @@ void newGame(){
 
 	if (!activeMasks.empty()){
 		for (list<Mask>::iterator mask = activeMasks.begin(); mask != activeMasks.end(); mask++){
+			
 			mask->spawn();
 			if ((mask->trackM.getX() + 110 > charecterX&&mask->trackM.getX() - 110 < charecterX) && mask->trackM.getY() < charecterY + 100 && mask->hideM == false && !jump)
 			{
