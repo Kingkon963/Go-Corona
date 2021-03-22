@@ -8,6 +8,10 @@ void homePage(){
 	helpIndex = 1;
 	iPauseTimer(virusFactoryTimer);
 	iPauseTimer(maskTimer);
-	iShowBMP(0, 0, "images//bg.bmp");
+
+	//iShowBMP(0, 0, "images//bg.bmp");
+	iShowImage(0, 0, 1020, 720, homeImg);
+	iShowImage(250, 607, 402, 77, logoImg);
+	
 	menu.display();
 }
