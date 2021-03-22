@@ -198,6 +198,7 @@ void gameOverLogic(){
 
 #include "Track.h";
 #include "Virus.h";
+#include "Mask.h";
 #include "Menu.h";
 #include "Navigation.h";
 
