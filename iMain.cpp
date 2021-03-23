@@ -32,7 +32,6 @@ bool showPassiveMousePosition = true;
 long int  point = 0;
 int flag = 0;
 int movec = (windowWidth / 2) - 85;
-char* hoverImg[5] = { "images//help1.bmp", "images//hover4.bmp", "images//hover3.bmp", "images//hover2.bmp", "images//hover1.bmp" };
 int randomTrack, prevTrack = -1;
 int index0 = 0;
 int in = 0;

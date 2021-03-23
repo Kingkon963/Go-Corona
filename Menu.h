@@ -1,5 +1,6 @@
-char* menuTitles2[6] = { "help", "credits", "highScores", "settings", "newGame", "gameOverPage" };
-char* menuTitles[5] = { "images//help.bmp", "images//menu4.bmp", "images//menu3.bmp", "images//menu2.bmp", "images//menu1.bmp" };
+char* menuTitlesText[5] = { "help", "credits", "highScores", "settings", "newGame" };
+char* menuTitlesImg[5] = { "images//help.bmp", "images//menu4.bmp", "images//menu3.bmp", "images//menu2.bmp", "images//menu1.bmp" };
+char* hoverImg[5] = { "images//help1.bmp", "images//hover4.bmp", "images//hover3.bmp", "images//hover2.bmp", "images//hover1.bmp" };
 int totalMenuItems = 5;
 
 struct MenuItem{
@@ -38,11 +39,8 @@ struct MenuItem{
 			}
 		}
 		else{
-			//iRectangle(x, y, width, height);
 			firstEntry = true;
 		}
-
-		//iText(x + getPercentage(width, 40), y + getPercentage(height, 40), title, GLUT_BITMAP_HELVETICA_18);
 
 	}
 
@@ -56,10 +54,15 @@ struct Menu{
 	int dy = 70, totalItems;
 	int width, height;
 	MenuItem *items;
+	char **titlesText, **titlesImg, **hoverImg;
 
-	Menu(int x, int y, int width, int height, MenuItem items[], int totalItems) :x(x), y(y), width(width), height(height), totalItems(totalItems){
+	Menu(int x, int y, int width, int height, MenuItem items[], int totalItems, char **menuTitlesText, char **menuTitlesImg, char **hoverImg) 
+		:x(x), y(y), width(width), height(height), totalItems(totalItems), titlesText(menuTitlesText), 
+		 titlesImg(menuTitlesImg), hoverImg(hoverImg){
+
 		this->items = items;
 	}
+
 
 	void display(){
 		for (int i = 0; i < totalItems; i++){
@@ -67,9 +70,9 @@ struct Menu{
 			items[i].y = this->y;
 			items[i].width = this->width;
 			items[i].height = this->height;
-			items[i].title = menuTitles2[i];
-			items[i].hover = hoverImg[i];//hover state image (Muhaiminul kabir)
-			items[i].backgroundImg = menuTitles[i];
+			items[i].title = titlesText[i];
+			items[i].hover = hoverImg[i];
+			items[i].backgroundImg = titlesImg[i];
 			items[i].display();
 
 			y += dy;
@@ -80,4 +83,4 @@ struct Menu{
 
 
 MenuItem menuItems[5];
-Menu menu(300, 200, 400, 50, menuItems, totalMenuItems);
+Menu menu(300, 200, 400, 50, menuItems, totalMenuItems, menuTitlesText, menuTitlesImg, hoverImg);
