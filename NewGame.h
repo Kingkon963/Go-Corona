@@ -7,7 +7,7 @@ void newGame(){
 	iResumeTimer(virusFactoryTimer);
 
 
-    iResumeTimer(maskTimer);
+    iResumeTimer(maskFactoryTimer);
 
 	
     if ((musicOn == true && optionMusicOn == true && gameOver == false) || (pause && optionMusicOn == true && gameOver == false))
@@ -31,8 +31,10 @@ void newGame(){
 		themeSong = false;
 	}
 
+	iResumeTimer(roadTimer);
+	iResumeTimer(charecterTimer);
 	iResumeTimer(virusFactoryTimer);
-	iResumeTimer(maskTimer);
+	iResumeTimer(maskFactoryTimer);
 
 	iShowBMP(0, 524, "images//sky.bmp");
 

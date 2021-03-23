@@ -5,8 +5,9 @@ void homePage(){
 		mainSong = false;
 	}
 	isHelpPage = false;
+	
 	iPauseTimer(virusFactoryTimer);
-	iPauseTimer(maskTimer);
+	iPauseTimer(maskFactoryTimer);
 
 	//iShowBMP(0, 0, "images//bg.bmp");
 	iShowImage(0, 0, 1020, 720, homeImg);

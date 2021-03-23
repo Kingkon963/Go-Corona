@@ -11,12 +11,16 @@ Menu menu2(300, 200, 400, 50, menuItems2, totalMenuItems2, pauseMenuTitlesText, 
 
 void pauseMenu(){
 	BASS_ChannelPause(runningSound);
-	
+
+	iPauseTimer(roadTimer);
+	iPauseTimer(charecterTimer);
+	iPauseTimer(virusFactoryTimer);
+	iPauseTimer(maskFactoryTimer);
+
+
 	musicOn = true;
 	pause = true;
-	BASS_ChannelStop(runningSound);
-	iPauseTimer(virusFactoryTimer);
-	iPauseTimer(maskTimer);
+
 	iShowBMP(0, 0, "images//bg.bmp");
 	menu2.display();
 
