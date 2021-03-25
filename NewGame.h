@@ -6,7 +6,8 @@ void newGame(){
 
 	iResumeTimer(virusFactoryTimer);
 
-
+	if (pause == false)
+		iResumeTimer(pointTimer);
     iResumeTimer(maskTimer);
 
 	
@@ -48,11 +49,12 @@ void newGame(){
 		for (list<Virus>::iterator virus = activeViruses.begin(); virus != activeViruses.end(); virus++){
 			virus->spawn();
 
-			if ((virus->track.getX() + 110 > charecterX && virus->track.getX() - 110 < charecterX) && virus->track.getY() < charecterY + 100 && virus->hide == false && !jump)
+			if ((virus->track.getX() + 110 > charecterX && virus->track.getX() - 110 < charecterX) && virus->track.getY() < charecterY + 50 && virus->hide == false && !jump)
 			{
 				if (optionMusicOn){
-					BASS_ChannelPlay(collisionSound, false);
+					BASS_ChannelPlay(coughSound, false);
 				}
+				
 				life--;
 				isCollision = true;
 				virus->hide = true;
@@ -68,11 +70,17 @@ void newGame(){
 		for (list<Mask>::iterator mask = activeMasks.begin(); mask != activeMasks.end(); mask++){
 
 			mask->spawn();
-			if ((mask->trackM.getX() + 110 > charecterX&&mask->trackM.getX() - 110 < charecterX) && mask->trackM.getY() < charecterY + 100 && mask->hideM == false && !jump)
+			if ((mask->trackM.getX() + 110 > charecterX&&mask->trackM.getX() - 110 < charecterX) && mask->trackM.getY() < charecterY + 50 && mask->hideM == false && !jump)
 			{
+				if (optionMusicOn){
+					BASS_ChannelPlay(collisionSound, false);
+				}
 				life++;
 				if (life>3)
+				{
 					life = 3;
+					point+=50;
+				}
 				mask->hideM = true;
 			}
 
@@ -116,8 +124,8 @@ void newGame(){
 	
 
 	//iLine(240, 140, 442, 514);
-	point++;// SHOULD BE CHANGED
-
+	// SHOULD BE CHANGED
+	
 	show(point, 400, 670);// Showing int on screen
 	lifeIndicator(life);
 	if (life < 1)
