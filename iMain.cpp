@@ -140,7 +140,7 @@ int stBG;
 int randomTrackV = -1;
 int randomTrackM = -1;
 int prevTrackM;
-int maskTimer;
+int maskFactoryTimer;
 bool mainSong = true;
 bool pause = false;
 
@@ -236,10 +236,6 @@ void showCloud()
   
 }
 /******************Function to detecet collision***************/
-
-
-
-
 
 
 void convertInt(char str[], long int a) {
@@ -939,9 +935,13 @@ int main()
 	//int runTimer = iSetTimer(0, run);
 	roadTimer = iSetTimer(100, moveRoad);
 	charecterTimer = iSetTimer(10, moveCharecter);
-	virusFactoryTimer = iSetTimer(2000, virusFactory);
-	maskTimer = iSetTimer(10000,maskFactory);
+
 	pointTimer = iSetTimer(500,pointFunction);
+
+	virusFactoryTimer = iSetTimer(1000, virusFactory);
+	maskFactoryTimer = iSetTimer(30000,maskFactory);
+
+
 	srand((unsigned)time(NULL));
 
 	iInitialize(windowWidth, windowHeight, "My Game");
