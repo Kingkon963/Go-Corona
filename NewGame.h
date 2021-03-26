@@ -4,14 +4,11 @@ void newGame(){
 
 	BASS_ChannelPause(themeSong1);
 
-	iResumeTimer(virusFactoryTimer);
+iResumeTimer(virusFactoryTimer);
+iResumeTimer(pointTimer);
 
 
-	if (pause == false)
-		iResumeTimer(pointTimer);
-
-
-    iResumeTimer(maskFactoryTimer);
+ iResumeTimer(maskFactoryTimer);
 
 
 	
@@ -27,14 +24,15 @@ void newGame(){
 		
 	}
 
-	if ( optionMusicOn == true && gameOver == false&& themeSong==true)
+	if ( optionMusicOn == true && gameOver == false)
 
 	{
 		//PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
-		BASS_ChannelPlay(themeSong2, true);
+		BASS_ChannelPlay(themeSong2, false);
 
-		themeSong = false;
+		
 	}
+	
 
 	iResumeTimer(roadTimer);
 	iResumeTimer(charecterTimer);

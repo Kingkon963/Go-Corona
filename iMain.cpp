@@ -18,7 +18,7 @@ using namespace std;
 #define Y2 416
 #define GH 1 ///////// for high score////////////
 
-HSTREAM runningSound, collisionSound,themeSong1,themeSong2,coughSound;
+HSTREAM runningSound, collisionSound,themeSong1,themeSong2,coughSound,glitchSound;
 bool themeSong = true;
 int jumpIndex = 0;
 bool skip = false;
@@ -53,13 +53,16 @@ int mpx, mpy, count = 0;
 
 // TIMER
 int virusFactoryTimer;
-int roadTimer, charecterTimer;
+int roadTimer, charecterTimer,introTimer;
 
-string currentPage = "homePage";
+string currentPage = "introPage";
 
 //char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
 int runningIndex = 0;
-
+//intro
+int intro1, intro2,intro3;
+int intro_i = 0;
+int introIndex[60] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1};
 char roads[5][20] =
 {
 	"images//a.bmp",
@@ -182,7 +185,33 @@ struct playerData{
 	long int scr;
 };
 
+void IntroFunction(){
+	iResumeTimer(introTimer);
+	if (intro_i>20)
+	BASS_ChannelPlay(glitchSound, false);
+	if (introIndex[intro_i] == 0)
+		iShowImage(0,0,1020,720,intro1);
 
+	else if (introIndex[intro_i] == 1)
+		iShowImage(0, 0, 1020, 720, intro2);
+	else if (introIndex[intro_i] == 2)
+		iShowImage(0, 0, 1020, 720, homeImg);
+
+	if (intro_i > 59)
+	{
+		BASS_ChannelStop(glitchSound);
+		intro_i = 0;
+		iPauseTimer(introTimer);
+		currentPage = "homePage";
+	}
+
+
+
+};
+void intro_indexer()
+{
+	intro_i++;
+};
 void gameOverLogic(){
 	if (gameOver){
 		takeScore = true;
@@ -313,7 +342,10 @@ void loadImages(){
 	 maskImg100 = iLoadImage("images/maskImg100.png");
 	 stBG = iLoadImage("images/standardBG.png");
 
-	
+	 intro1 = iLoadImage("images/intro1.png");
+
+	 intro2 = iLoadImage("images/intro2.png");
+
 	 homeImg = iLoadImage("images/home.png");
 	
 	 for (int i = 0; i < 21; i++){
@@ -330,7 +362,7 @@ void loadSounds() {
 	collisionSound = BASS_StreamCreateFile(false, "Sounds/collision.wav", 0, 0, BASS_SAMPLE_MONO);
 	themeSong1 = BASS_StreamCreateFile(false, "Sounds/themeSong1.wav", 0, 0, BASS_SAMPLE_LOOP);
 	themeSong2 = BASS_StreamCreateFile(false, "Sounds/themeSong2.wav", 0, 0, BASS_SAMPLE_LOOP);
-
+	glitchSound = BASS_StreamCreateFile(false, "Sounds/glitchEffect.mp3", 0, 0, BASS_SAMPLE_MONO);
 	BASS_ChannelSetAttribute(runningSound, BASS_ATTRIB_VOL, 1);
 	BASS_ChannelSetAttribute(collisionSound, BASS_ATTRIB_VOL, .3);
 	BASS_ChannelSetAttribute(themeSong1, BASS_ATTRIB_VOL, .3);
@@ -597,8 +629,9 @@ void iDraw()
 	iSetColor(r, g, b);
 
 	iText(0, 0, &currentPage[0]);
-
-	if (currentPage == "homePage")
+	if (currentPage == "introPage")
+		IntroFunction();
+	else if (currentPage == "homePage")
 		homePage();
 	else if (currentPage == "newGame"){
 
@@ -938,9 +971,9 @@ int main()
 
 	pointTimer = iSetTimer(500,pointFunction);
 
-	virusFactoryTimer = iSetTimer(1000, virusFactory);
+	virusFactoryTimer = iSetTimer(1600, virusFactory);
 	maskFactoryTimer = iSetTimer(30000,maskFactory);
-
+	introTimer = iSetTimer(100,intro_indexer);
 
 	srand((unsigned)time(NULL));
 
