@@ -6,7 +6,6 @@ void newGame(){
 
 	iResumeTimer(virusFactoryTimer);
 
-
     iResumeTimer(maskFactoryTimer);
 
 	
