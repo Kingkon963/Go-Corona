@@ -1,5 +1,5 @@
 void settings(){
-
+	iShowImage(0, 0, 1020, 720, stBG);
 	iText(260, 575, "Music", GLUT_BITMAP_TIMES_ROMAN_24);
 	iText(260, 475, "Difficulity", GLUT_BITMAP_TIMES_ROMAN_24);
 
@@ -31,4 +31,7 @@ void settings(){
 	//iShowBMP2(370, 600, "images//22.bmp", 0);
 	if (!pause) { iShowBMP2(10, 10, "images//home.bmp", 0); }
 	else{ iShowBMP2(10, 10, "images//back.bmp", 0); }
+	
+
+
 }

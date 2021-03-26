@@ -4,7 +4,6 @@
 #include <iostream>
 #include <array>
 #include <string>
-//#include <vector>
 #include <list>
 #include<windows.h>
 #include <time.h>
@@ -19,8 +18,9 @@ using namespace std;
 #define Y2 416
 #define GH 1 ///////// for high score////////////
 
-HSTREAM runningSound, collisionSound;
-
+HSTREAM runningSound, collisionSound,themeSong1,themeSong2,coughSound;
+bool themeSong = true;
+int jumpIndex = 0;
 bool skip = false;
 bool newG = false;
 bool gameOver = false;
@@ -32,14 +32,14 @@ bool showPassiveMousePosition = true;
 long int  point = 0;
 int flag = 0;
 int movec = (windowWidth / 2) - 85;
-char* hoverImg[5] = { "images//help1.bmp", "images//hover4.bmp", "images//hover3.bmp", "images//hover2.bmp", "images//hover1.bmp" };
 int randomTrack, prevTrack = -1;
 int index0 = 0;
 int in = 0;
+double getSpeedByDifficulty[3][3] = { { 1.5, 2, 2.5 }, { .3, .35, .4 }, { 1, 1.5, 2 } };
 
 char userName[1000];
 char s[100];
-
+int pointTimer;
 int heartTimer;
 int x;
 int y;
@@ -53,19 +53,20 @@ int mpx, mpy, count = 0;
 
 // TIMER
 int virusFactoryTimer;
-int roadTimer;
+int roadTimer, charecterTimer;
 
 string currentPage = "homePage";
 
 //char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
 int runningIndex = 0;
 
-char roads[4][20] =
+char roads[5][20] =
 {
 	"images//a.bmp",
 	"images//b.bmp",
 	"images//c.bmp",
-	"images//d.bmp"
+	"images//d.bmp",
+	"images//e.bmp"
 };
 
 char *gameOverImg[3] = { "images//gameO5.bmp", "images//gameO2.bmp", "images//gameO1.bmp" };
@@ -100,6 +101,8 @@ int maskImg;
 int maskImg75;
 int maskImg100;
 
+int homeImg;
+
 int life = 3;
 int roadIndex = 3;
 bool musicOn = true;
@@ -108,8 +111,8 @@ bool gameOverSound = false;
 int charecterX = (windowWidth / 2) - 80;
 int charecterY = 10;
 bool jump = false;
-int jumpY = 10;
-int max_jumpY = 100;
+int jumpY = 0;
+int max_jumpY = 200;
 int scrollY = 0;
 int universalScoreVar = 0;
 double cloudY = 534;
@@ -133,12 +136,12 @@ bool optionDifficulityLow = true;
 bool optionDifficulityMedium = false;
 int musicStateIndex = 0;
 int difficulityStateIndex = 0;
-
-int randomTrackV;
-int randomTrackM;
+int stBG;
+int randomTrackV = -1;
+int randomTrackM = -1;
 int prevTrackM;
-int maskTimer;
-
+int maskFactoryTimer;
+bool mainSong = true;
 bool pause = false;
 
 
@@ -170,7 +173,7 @@ void collision();
 void sun();
 void loadImages();
 void virusFactory();
-
+void jumpdown();
 
 
 
@@ -197,6 +200,7 @@ void gameOverLogic(){
 
 #include "Track.h";
 #include "Virus.h";
+#include "Mask.h";
 #include "Menu.h";
 #include "Navigation.h";
 
@@ -232,10 +236,6 @@ void showCloud()
   
 }
 /******************Function to detecet collision***************/
-
-
-
-
 
 
 void convertInt(char str[], long int a) {
@@ -311,8 +311,12 @@ void loadImages(){
      maskImg=iLoadImage("images/maskImg.png");
 	 maskImg75 = iLoadImage("images/maskImg75.png");
 	 maskImg100 = iLoadImage("images/maskImg100.png");
+	 stBG = iLoadImage("images/standardBG.png");
 
-	for (int i = 0; i < 21; i++){
+	
+	 homeImg = iLoadImage("images/home.png");
+	
+	 for (int i = 0; i < 21; i++){
 		charecterImageAddress = "images/charecter/";
 		charecterImageAddress += to_string(i+1);
 		charecterImageAddress += ".png";
@@ -321,8 +325,15 @@ void loadImages(){
 	}
 }
 void loadSounds() {
+	coughSound = BASS_StreamCreateFile(false, "Sounds/Coughing.mp3", 0, 0, BASS_SAMPLE_MONO);
 	runningSound = BASS_StreamCreateFile(false, "Sounds/runSound.wav", 0, 0, BASS_SAMPLE_LOOP);
 	collisionSound = BASS_StreamCreateFile(false, "Sounds/collision.wav", 0, 0, BASS_SAMPLE_MONO);
+	themeSong1 = BASS_StreamCreateFile(false, "Sounds/themeSong1.wav", 0, 0, BASS_SAMPLE_LOOP);
+	themeSong2 = BASS_StreamCreateFile(false, "Sounds/themeSong2.wav", 0, 0, BASS_SAMPLE_LOOP);
+
+	BASS_ChannelSetAttribute(runningSound, BASS_ATTRIB_VOL, 1);
+	BASS_ChannelSetAttribute(collisionSound, BASS_ATTRIB_VOL, .3);
+	BASS_ChannelSetAttribute(themeSong1, BASS_ATTRIB_VOL, .3);
 }
 
 void setHigh(char* player, long int scr) {
@@ -378,7 +389,7 @@ void showHigh(){
 	}
 	else{
 		iText(300, 500, "Player", GLUT_BITMAP_TIMES_ROMAN_24);
-		iText(600, 500, "Score", GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(650, 500, "Score", GLUT_BITMAP_TIMES_ROMAN_24);
 		int count = 0;
 		int i = 0;
 		int scr;
@@ -391,7 +402,7 @@ void showHigh(){
 
 					iText(300, 450 - i, pl, GLUT_BITMAP_TIMES_ROMAN_24);
 					convertInt(p, scr);
-					iText(600, 450 - i, p, GLUT_BITMAP_TIMES_ROMAN_24);
+					iText(650, 450 - i, p, GLUT_BITMAP_TIMES_ROMAN_24);
 
 				}
 				else{
@@ -414,8 +425,9 @@ void showHigh(){
 }
 void show(long int a, int x, int y)
 {
-	char p[1000];
-	long int i, rem, count = 0, f;
+
+char p[1000];
+long int i, rem, count = 0, f;
 	f = a;
 	while (f != 0) {
 		count++;
@@ -487,45 +499,56 @@ void run(){
 }
 
 void moveRoad(){
-	roadIndex--;
-	if (roadIndex <= 0) roadIndex = 3;
+	roadIndex++;
+	if (roadIndex>4 ) roadIndex = 0;
+}
+
+void moveCharecter(){
+	if (!jump){
+		runningIndex++;
+		if (runningIndex >= 20) runningIndex = 0;
+	}
 
 }
 
+void pointFunction()
+{
+	point++;
 
+}
 void sun(){
 	iSetColor(247, 127, 0);
-	iFilledCircle(161, 527, 50, 100);
+	iFilledCircle(161, 625, 50, 100);
 
 }
 void virusFactory(){
 	 randomTrackV = rand() % 3;
-	while (randomTrackV == prevTrack) randomTrackV = rand() % 3;
+	while (randomTrackV == prevTrack || randomTrackV == randomTrackM) randomTrackV = rand() % 3;
 
 	switch (randomTrackV){
 	case 0:
 		virus.track = lt;
-		virus.speed = 1.5;
+		virus.speed = getSpeedByDifficulty[0][difficulityStateIndex];
 		prevTrack = 0;
 		break;
 	case 1:
 		virus.track = mt;
-		virus.speed = .3;
+		virus.speed = getSpeedByDifficulty[1][difficulityStateIndex];
 		prevTrack = 1;
 		break;
 	case 2:
 		virus.track = rt;
-		virus.speed = 1;
+		virus.speed = getSpeedByDifficulty[2][difficulityStateIndex];
 		prevTrack = 2;
 		break;
 	default:
-		cout << "Error in generating randomTrack" << endl;
+		cout << "Error in generating randomTrack for Virus" << endl;
 	}
 
 	cout << virus.hide << endl;
 	activeViruses.push_back(virus);
 
-	if (activeViruses.size() == 10) {
+	if (activeViruses.size() == 30) {
 		activeViruses.pop_front();
 	}
 
@@ -533,39 +556,37 @@ void virusFactory(){
 }
 void maskFactory(){
 	randomTrackM = rand() % 3;
-	while (randomTrackM == prevTrackM&&randomTrackV==randomTrackM) randomTrackM = rand() % 3;
+	while (randomTrackM == prevTrackM || randomTrackM == randomTrackV) randomTrackM = rand() % 3;
 
 	switch (randomTrackM){
 	case 0:
 		mask.trackM = lt;
-		mask.speedM = 1.5;
+		mask.speedM = getSpeedByDifficulty[0][difficulityStateIndex];
 		prevTrackM = 0;
 		break;
 	case 1:
 		mask.trackM = mt;
-		mask.speedM = .3;
+		mask.speedM = getSpeedByDifficulty[1][difficulityStateIndex];
 		prevTrackM = 1;
 		break;
 	case 2:
 		mask.trackM = rt;
-		mask.speedM = 1;
+		mask.speedM = getSpeedByDifficulty[2][difficulityStateIndex];
 		prevTrackM = 2;
 		break;
 	default:
-		cout << "Error in generating randomTrack" << endl;
+		cout << "Error in generating randomTrack for Mask" << endl;
 	}
 
 
 	activeMasks.push_back(mask);
 
-	if (activeMasks.size() == 4) {
+	if (activeMasks.size() == 10) {
 		activeMasks.pop_front();
 	}
 
 
 }
-
-
 
 void iDraw()
 {
@@ -790,14 +811,14 @@ void iSpecialKeyboard(unsigned char key)
 		}
 	}
 	else if (currentPage == "newGame"){
-		if (key == GLUT_KEY_RIGHT)
+		if (key == GLUT_KEY_RIGHT&&jump == false)
 		{
 			charecterX += 285;
 			if (charecterX > 720)
 				charecterX = 720;
 
 		}
-		if (key == GLUT_KEY_LEFT)
+		if (key == GLUT_KEY_LEFT&&jump == false)
 		{
 			charecterX -= 285;
 			if (charecterX < 150)
@@ -805,8 +826,11 @@ void iSpecialKeyboard(unsigned char key)
 
 		}
 		if (key == GLUT_KEY_UP){
-			if (!jump)
+			if (!jump){
 				jump = true;
+				BASS_ChannelPause(runningSound);
+				cout << "Sound Paused..." << jump << endl;
+			}
 		}
 	}
 
@@ -841,6 +865,10 @@ void iSpecialKeyboard(unsigned char key)
 				optionMusicOff = false;
 				optionMusicOn = true;
 			}
+			if (optionMusicOn == false)
+				BASS_ChannelPause(themeSong1);
+			
+		
 		}
 		else if (key == GLUT_KEY_LEFT && scrollSettingsY == 0){
 			if (optionMusicOn){
@@ -851,6 +879,8 @@ void iSpecialKeyboard(unsigned char key)
 				optionMusicOff = false;
 				optionMusicOn = true;
 			}
+			if (optionMusicOn == true)
+				BASS_ChannelPlay(themeSong1, true);
 		}
 		if (key == GLUT_KEY_RIGHT && scrollSettingsY == 100){
 
@@ -904,16 +934,24 @@ int main()
 {
 	//int runTimer = iSetTimer(0, run);
 	roadTimer = iSetTimer(100, moveRoad);
-	virusFactoryTimer = iSetTimer(1500, virusFactory);
-	maskTimer = iSetTimer(10000,maskFactory);
+	charecterTimer = iSetTimer(10, moveCharecter);
+
+	pointTimer = iSetTimer(500,pointFunction);
+
+	virusFactoryTimer = iSetTimer(1000, virusFactory);
+	maskFactoryTimer = iSetTimer(30000,maskFactory);
+
+
 	srand((unsigned)time(NULL));
+
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations
+	
 	loadImages();
 
 	if (!BASS_Init(-1, 44100, 0, NULL, NULL))
 		cout << "Failed in BASS_Init" << endl;
-
+		
 	loadSounds();
 
 	iStart();
