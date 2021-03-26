@@ -556,7 +556,8 @@ void virusFactory(){
 }
 void maskFactory(){
 	randomTrackM = rand() % 3;
-	while (randomTrackM == prevTrackM || randomTrackM == randomTrackV) randomTrackM = rand() % 3;
+	while (randomTrackM == prevTrackM) randomTrackM = rand() % 3;
+	if (randomTrackM == randomTrackV) randomTrackM = prevTrack;
 
 	switch (randomTrackM){
 	case 0:
