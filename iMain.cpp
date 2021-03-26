@@ -18,7 +18,7 @@ using namespace std;
 #define Y2 416
 #define GH 1 ///////// for high score////////////
 
-HSTREAM runningSound, collisionSound,themeSong1,themeSong2;
+HSTREAM runningSound, collisionSound,themeSong1,themeSong2,coughSound;
 bool themeSong = true;
 int jumpIndex = 0;
 bool skip = false;
@@ -39,7 +39,7 @@ double getSpeedByDifficulty[3][3] = { { 1.5, 2, 2.5 }, { .3, .35, .4 }, { 1, 1.5
 
 char userName[1000];
 char s[100];
-
+int pointTimer;
 int heartTimer;
 int x;
 int y;
@@ -60,12 +60,13 @@ string currentPage = "homePage";
 //char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
 int runningIndex = 0;
 
-char roads[4][20] =
+char roads[5][20] =
 {
 	"images//a.bmp",
 	"images//b.bmp",
 	"images//c.bmp",
-	"images//d.bmp"
+	"images//d.bmp",
+	"images//e.bmp"
 };
 
 char *gameOverImg[3] = { "images//gameO5.bmp", "images//gameO2.bmp", "images//gameO1.bmp" };
@@ -100,7 +101,7 @@ int maskImg;
 int maskImg75;
 int maskImg100;
 
-int logoImg, homeImg;
+int homeImg;
 
 int life = 3;
 int roadIndex = 3;
@@ -310,10 +311,10 @@ void loadImages(){
      maskImg=iLoadImage("images/maskImg.png");
 	 maskImg75 = iLoadImage("images/maskImg75.png");
 	 maskImg100 = iLoadImage("images/maskImg100.png");
-	 stBG = iLoadImage("images/SOFTWARE DEVELPOMENT-1 (6).png");
+	 stBG = iLoadImage("images/standardBG.png");
 
-	 logoImg = iLoadImage("images/logo.png");
-	 homeImg = iLoadImage("images/home.jpg");
+	
+	 homeImg = iLoadImage("images/home.png");
 	
 	 for (int i = 0; i < 21; i++){
 		charecterImageAddress = "images/charecter/";
@@ -324,6 +325,7 @@ void loadImages(){
 	}
 }
 void loadSounds() {
+	coughSound = BASS_StreamCreateFile(false, "Sounds/Coughing.mp3", 0, 0, BASS_SAMPLE_MONO);
 	runningSound = BASS_StreamCreateFile(false, "Sounds/runSound.wav", 0, 0, BASS_SAMPLE_LOOP);
 	collisionSound = BASS_StreamCreateFile(false, "Sounds/collision.wav", 0, 0, BASS_SAMPLE_MONO);
 	themeSong1 = BASS_StreamCreateFile(false, "Sounds/themeSong1.wav", 0, 0, BASS_SAMPLE_LOOP);
@@ -387,7 +389,7 @@ void showHigh(){
 	}
 	else{
 		iText(300, 500, "Player", GLUT_BITMAP_TIMES_ROMAN_24);
-		iText(600, 500, "Score", GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(650, 500, "Score", GLUT_BITMAP_TIMES_ROMAN_24);
 		int count = 0;
 		int i = 0;
 		int scr;
@@ -400,7 +402,7 @@ void showHigh(){
 
 					iText(300, 450 - i, pl, GLUT_BITMAP_TIMES_ROMAN_24);
 					convertInt(p, scr);
-					iText(600, 450 - i, p, GLUT_BITMAP_TIMES_ROMAN_24);
+					iText(650, 450 - i, p, GLUT_BITMAP_TIMES_ROMAN_24);
 
 				}
 				else{
@@ -424,7 +426,7 @@ void showHigh(){
 void show(long int a, int x, int y)
 {
 
-		char p[1000];
+char p[1000];
 long int i, rem, count = 0, f;
 	f = a;
 	while (f != 0) {
@@ -497,8 +499,8 @@ void run(){
 }
 
 void moveRoad(){
-	roadIndex--;
-	if (roadIndex <= 0) roadIndex = 3;
+	roadIndex++;
+	if (roadIndex>4 ) roadIndex = 0;
 }
 
 void moveCharecter(){
@@ -509,10 +511,14 @@ void moveCharecter(){
 
 }
 
+void pointFunction()
+{
+	point++;
 
+}
 void sun(){
 	iSetColor(247, 127, 0);
-	iFilledCircle(161, 527, 50, 100);
+	iFilledCircle(161, 625, 50, 100);
 
 }
 void virusFactory(){
@@ -805,14 +811,14 @@ void iSpecialKeyboard(unsigned char key)
 		}
 	}
 	else if (currentPage == "newGame"){
-		if (key == GLUT_KEY_RIGHT)
+		if (key == GLUT_KEY_RIGHT&&jump == false)
 		{
 			charecterX += 285;
 			if (charecterX > 720)
 				charecterX = 720;
 
 		}
-		if (key == GLUT_KEY_LEFT)
+		if (key == GLUT_KEY_LEFT&&jump == false)
 		{
 			charecterX -= 285;
 			if (charecterX < 150)
@@ -859,6 +865,10 @@ void iSpecialKeyboard(unsigned char key)
 				optionMusicOff = false;
 				optionMusicOn = true;
 			}
+			if (optionMusicOn == false)
+				BASS_ChannelPause(themeSong1);
+			
+		
 		}
 		else if (key == GLUT_KEY_LEFT && scrollSettingsY == 0){
 			if (optionMusicOn){
@@ -869,6 +879,8 @@ void iSpecialKeyboard(unsigned char key)
 				optionMusicOff = false;
 				optionMusicOn = true;
 			}
+			if (optionMusicOn == true)
+				BASS_ChannelPlay(themeSong1, true);
 		}
 		if (key == GLUT_KEY_RIGHT && scrollSettingsY == 100){
 
@@ -923,8 +935,12 @@ int main()
 	//int runTimer = iSetTimer(0, run);
 	roadTimer = iSetTimer(100, moveRoad);
 	charecterTimer = iSetTimer(10, moveCharecter);
+
+	pointTimer = iSetTimer(500,pointFunction);
+
 	virusFactoryTimer = iSetTimer(1000, virusFactory);
 	maskFactoryTimer = iSetTimer(30000,maskFactory);
+
 
 	srand((unsigned)time(NULL));
 
@@ -935,7 +951,7 @@ int main()
 
 	if (!BASS_Init(-1, 44100, 0, NULL, NULL))
 		cout << "Failed in BASS_Init" << endl;
-
+		
 	loadSounds();
 
 	iStart();

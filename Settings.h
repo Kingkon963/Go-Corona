@@ -32,4 +32,6 @@ void settings(){
 	if (!pause) { iShowBMP2(10, 10, "images//home.bmp", 0); }
 	else{ iShowBMP2(10, 10, "images//back.bmp", 0); }
 	
+
+
 }
