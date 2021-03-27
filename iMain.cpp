@@ -5,7 +5,7 @@
 #include <array>
 #include <string>
 #include <list>
-#include<windows.h>
+#include <windows.h>
 #include <time.h>
 #include <bass/bass.h>
 
@@ -817,6 +817,8 @@ void iKeyboard(unsigned char key){
 			gameOver = true;
 
 		}
+
+		if (key == 'p') currentPage = "pauseMenu";
 	}
 	else if (currentPage == "gameOverPage"){
 		if (key){

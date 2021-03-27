@@ -6,6 +6,7 @@ void gameOverPage(){
 	iPauseTimer(pointTimer);
 	BASS_ChannelPause(runningSound);
 	BASS_ChannelPause(themeSong2);
+	charecterX = (windowWidth / 2) - 80;
 	themeSong = true;
 	mainSong = true;
 	point = 0;
