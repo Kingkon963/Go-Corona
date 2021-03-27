@@ -7,9 +7,9 @@ void homePage(){
 	isHelpPage = false;
 
 	helpIndex = 1;
-
+	point = 0;
 	
-
+	iPauseTimer(pointTimer);
 	iPauseTimer(virusFactoryTimer);
 	iPauseTimer(maskFactoryTimer);
 

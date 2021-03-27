@@ -4,14 +4,12 @@ void newGame(){
 
 	BASS_ChannelPause(themeSong1);
 
+
 	iResumeTimer(virusFactoryTimer);
+	iResumeTimer(pointTimer);
 
 
-
-	if (pause == false)
-		iResumeTimer(pointTimer);
-
-    iResumeTimer(maskFactoryTimer);
+	iResumeTimer(maskFactoryTimer);
 
 
 	
@@ -27,14 +25,15 @@ void newGame(){
 		
 	}
 
-	if ( optionMusicOn == true && gameOver == false&& themeSong==true)
+	if ( optionMusicOn == true && gameOver == false)
 
 	{
 		//PlaySound("SOUNDS\\runSound.WAV", NULL, SND_LOOP | SND_ASYNC);
-		BASS_ChannelPlay(themeSong2, true);
+		BASS_ChannelPlay(themeSong2, false);
 
-		themeSong = false;
+		
 	}
+	
 
 	iResumeTimer(roadTimer);
 	iResumeTimer(charecterTimer);
@@ -48,7 +47,7 @@ void newGame(){
 	iShowBMP2(0, 650, "images//pause.bmp", 0);
 	iShowBMP2(0, 0, roads[roadIndex], -1);
 
-	iText(10, windowHeight - 30, userName, GLUT_BITMAP_TIMES_ROMAN_24);
+	//iText(10, windowHeight - 30, userName, GLUT_BITMAP_TIMES_ROMAN_24);
 
 
 	if (!activeViruses.empty()){

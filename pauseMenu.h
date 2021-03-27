@@ -20,7 +20,8 @@ void pauseMenu(){
 	
 	iShowImage(0, 0, 1020, 720, homeImg);
 
-
+	if (optionMusicOn == false)
+		BASS_ChannelStop(themeSong2);
 	iPauseTimer(roadTimer);
 	iPauseTimer(charecterTimer);
 	iPauseTimer(virusFactoryTimer);
