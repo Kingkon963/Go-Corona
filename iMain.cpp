@@ -4,7 +4,6 @@
 #include <iostream>
 #include <array>
 #include <string>
-//#include <vector>
 #include <list>
 #include<windows.h>
 #include <time.h>
@@ -19,27 +18,29 @@ using namespace std;
 #define Y2 416
 #define GH 1 ///////// for high score////////////
 
-HSTREAM runningSound, collisionSound;
-
+HSTREAM runningSound, collisionSound,themeSong1,themeSong2,coughSound,glitchSound;
+bool themeSong = true;
+int jumpIndex = 0;
 bool skip = false;
 bool newG = false;
 bool gameOver = false;
 bool inDis = true;
 bool takeInput = true; //logic for input user name
 bool takeScore = true;
-bool showPassiveMousePosition = false;
+bool showPassiveMousePosition = true;
 //for high score
 long int  point = 0;
 int flag = 0;
 int movec = (windowWidth / 2) - 85;
-char* hoverImg[5] = { "images//help1.bmp", "images//hover4.bmp", "images//hover3.bmp", "images//hover2.bmp", "images//hover1.bmp" };
 int randomTrack, prevTrack = -1;
 int index0 = 0;
 int in = 0;
+double getSpeedByDifficulty[3][3] = { { 1.5, 2, 2.5 }, { .3, .35, .4 }, { 1, 1.5, 2 } };
+
 char userName[1000];
-
 char s[100];
-
+int pointTimer;
+int heartTimer;
 int x;
 int y;
 int jmp = 0;
@@ -52,19 +53,23 @@ int mpx, mpy, count = 0;
 
 // TIMER
 int virusFactoryTimer;
-int roadTimer;
+int roadTimer, charecterTimer,introTimer;
 
-string currentPage = "homePage";
+string currentPage = "introPage";
 
 //char person_run[2][20] = { "images//b14.bmp", "images//b17.bmp" };
 int runningIndex = 0;
-
-char roads[4][20] =
+//intro
+int intro1, intro2,intro3;
+int intro_i = 0;
+int introIndex[60] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1};
+char roads[5][20] =
 {
 	"images//a.bmp",
 	"images//b.bmp",
 	"images//c.bmp",
-	"images//d.bmp"
+	"images//d.bmp",
+	"images//e.bmp"
 };
 
 char *gameOverImg[3] = { "images//gameO5.bmp", "images//gameO2.bmp", "images//gameO1.bmp" };
@@ -95,7 +100,11 @@ char explosion[22][25] =
 	"images//explosion11.png",
 	"images//explosion11.png",
 };
+int maskImg;
+int maskImg75;
+int maskImg100;
 
+int homeImg;
 
 int life = 3;
 int roadIndex = 3;
@@ -105,8 +114,8 @@ bool gameOverSound = false;
 int charecterX = (windowWidth / 2) - 80;
 int charecterY = 10;
 bool jump = false;
-int jumpY = 10;
-int max_jumpY = 100;
+int jumpY = 0;
+int max_jumpY = 200;
 int scrollY = 0;
 int universalScoreVar = 0;
 double cloudY = 534;
@@ -118,7 +127,12 @@ int scrollSettingsY = 0;
 int gameOverIndex = 0;
 int virusImg, virusImg75, virusImg100;
 int virusIndex = 0;
-
+int helpIndex = 1;
+bool isHelpPage = false;
+int helpImg3;
+int helpImg1;
+int helpImg2;
+int onImg, offImg;
 bool optionMusicOff = false;
 bool optionMusicOn = true;
 bool optionDifficulityHigh = false;
@@ -126,6 +140,14 @@ bool optionDifficulityLow = true;
 bool optionDifficulityMedium = false;
 int musicStateIndex = 0;
 int difficulityStateIndex = 0;
+int stBG;
+int randomTrackV = -1;
+int randomTrackM = -1;
+int prevTrackM;
+int maskFactoryTimer;
+bool mainSong = true;
+bool pause = false;
+
 
 //charecter images
 int charecterImg[21];
@@ -155,7 +177,7 @@ void collision();
 void sun();
 void loadImages();
 void virusFactory();
-
+void jumpdown();
 
 
 
@@ -164,10 +186,55 @@ struct playerData{
 	long int scr;
 };
 
+void IntroFunction(){
+	iPauseTimer(pointTimer);
+	iPauseTimer(virusFactoryTimer);
+	iPauseTimer(maskFactoryTimer);
 
+	iResumeTimer(introTimer);
+	if (intro_i>20)
+	BASS_ChannelPlay(glitchSound, false);
+	if (introIndex[intro_i] == 0)
+		iShowImage(0,0,1020,720,intro1);
+
+	else if (introIndex[intro_i] == 1)
+		iShowImage(0, 0, 1020, 720, intro2);
+	else if (introIndex[intro_i] == 2)
+		iShowImage(0, 0, 1020, 720, homeImg);
+
+	if (intro_i > 59)
+	{
+		BASS_ChannelStop(glitchSound);
+		intro_i = 0;
+		iPauseTimer(introTimer);
+		currentPage = "homePage";
+	}
+
+
+
+};
+void intro_indexer()
+{
+	intro_i++;
+};
+void gameOverLogic(){
+	if (gameOver){
+		takeScore = true;
+		gameOverSound = true;
+	}
+	if (takeScore){
+		universalScoreVar = point;
+		setHigh(userName, point);//now for testing this function is taking score after pressing 'l',, it will take score when game over
+		takeScore = false;
+	}
+	if (gameOver == true && takeScore == false){
+		currentPage = "gameOverPage";
+	}
+}
 
 #include "Track.h";
 #include "Virus.h";
+#include "Mask.h";
 #include "Menu.h";
 #include "Navigation.h";
 
@@ -176,6 +243,7 @@ void showExplosion()
 {
 	if (isCollision == true){
 
+		
 		int id = iLoadImage(explosion[explosionIndex++]);
 		if (explosionIndex > 21)
 		{
@@ -202,41 +270,8 @@ void showCloud()
   
 }
 /******************Function to detecet collision***************/
-void collision()
-{
 
 
-
-/*	if ((lt.getX() + 60 > charecterX)&&(lt.getY() < charecterY + 180))
-	{
-		collisionX = lt.getX();
-		collisionY = lt.getY();
-		isCollision = true;
-
-	}
-
-
-	else if ((mt.getX() + 60 > charecterX) && (mt.getY() < charecterY + 180))
-	{
-
-		collisionX = mt.getX();
-		collisionY = mt.getY();
-		isCollision = true;
-	}
-
-
-	else if ((rt.getX() + 60) > charecterX&&(rt.getY() < charecterY + 180))
-	{
-		collisionX = rt.getX();
-		collisionY = rt.getY();
-		isCollision = true;
-
-	}
-
-	*/
-
-
-}
 void convertInt(char str[], long int a) {
 	long int i, rem, count = 0, f;
 	f = a;
@@ -304,7 +339,24 @@ void loadImages(){
 	virusImg = iLoadImage("images/virus.png");
 	virusImg75 = iLoadImage("images/virus75.png");
 	virusImg100 = iLoadImage("images/virus100.png");
+	helpImg1 = iLoadImage("images/helpImg1.png");
+	helpImg2 = iLoadImage("images/helpImg2.png");
+	helpImg3 = iLoadImage("images/helpImg3.png");
+    maskImg=iLoadImage("images/maskImg.png");
+	maskImg75 = iLoadImage("images/maskImg75.png");
+	maskImg100 = iLoadImage("images/maskImg100.png");
+	stBG = iLoadImage("images/standardBG.png");
 
+	intro1 = iLoadImage("images/intro1.png");
+
+	intro2 = iLoadImage("images/intro2.png");
+
+	homeImg = iLoadImage("images/home.png");
+
+	onImg = iLoadImage("images/on.png");
+	offImg = iLoadImage("images/off.png");
+	
+	
 	for (int i = 0; i < 21; i++){
 		charecterImageAddress = "images/charecter/";
 		charecterImageAddress += to_string(i+1);
@@ -314,8 +366,16 @@ void loadImages(){
 	}
 }
 void loadSounds() {
+	coughSound = BASS_StreamCreateFile(false, "Sounds/Coughing.mp3", 0, 0, BASS_SAMPLE_MONO);
 	runningSound = BASS_StreamCreateFile(false, "Sounds/runSound.wav", 0, 0, BASS_SAMPLE_LOOP);
 	collisionSound = BASS_StreamCreateFile(false, "Sounds/collision.wav", 0, 0, BASS_SAMPLE_MONO);
+	themeSong1 = BASS_StreamCreateFile(false, "Sounds/themeSong1.wav", 0, 0, BASS_SAMPLE_LOOP);
+	themeSong2 = BASS_StreamCreateFile(false, "Sounds/themeSong2.wav", 0, 0, BASS_SAMPLE_LOOP);
+	glitchSound = BASS_StreamCreateFile(false, "Sounds/glitchEffect.mp3", 0, 0, BASS_SAMPLE_MONO);
+	
+	BASS_ChannelSetAttribute(runningSound, BASS_ATTRIB_VOL, 1);
+	BASS_ChannelSetAttribute(collisionSound, BASS_ATTRIB_VOL, .3);
+	BASS_ChannelSetAttribute(themeSong2, BASS_ATTRIB_VOL, .3);
 }
 
 void setHigh(char* player, long int scr) {
@@ -371,7 +431,7 @@ void showHigh(){
 	}
 	else{
 		iText(300, 500, "Player", GLUT_BITMAP_TIMES_ROMAN_24);
-		iText(600, 500, "Score", GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(650, 500, "Score", GLUT_BITMAP_TIMES_ROMAN_24);
 		int count = 0;
 		int i = 0;
 		int scr;
@@ -384,7 +444,7 @@ void showHigh(){
 
 					iText(300, 450 - i, pl, GLUT_BITMAP_TIMES_ROMAN_24);
 					convertInt(p, scr);
-					iText(600, 450 - i, p, GLUT_BITMAP_TIMES_ROMAN_24);
+					iText(650, 450 - i, p, GLUT_BITMAP_TIMES_ROMAN_24);
 
 				}
 				else{
@@ -407,8 +467,9 @@ void showHigh(){
 }
 void show(long int a, int x, int y)
 {
-	char p[1000];
-	long int i, rem, count = 0, f;
+
+char p[1000];
+long int i, rem, count = 0, f;
 	f = a;
 	while (f != 0) {
 		count++;
@@ -480,52 +541,95 @@ void run(){
 }
 
 void moveRoad(){
-	roadIndex--;
-	if (roadIndex <= 0) roadIndex = 3;
+	roadIndex++;
+	if (roadIndex>4 ) roadIndex = 0;
+}
+
+void moveCharecter(){
+	if (!jump){
+		runningIndex++;
+		if (runningIndex >= 20) runningIndex = 0;
+	}
 
 }
 
+void pointFunction()
+{
+	point++;
 
+}
 void sun(){
 	iSetColor(247, 127, 0);
-	iFilledCircle(161, 527, 50, 100);
+	iFilledCircle(161, 625, 50, 100);
 
 }
 void virusFactory(){
-	int randomTrack = rand() % 3;
-	while (randomTrack == prevTrack) randomTrack = rand() % 3;
+	 randomTrackV = rand() % 3;
+	while (randomTrackV == prevTrack || randomTrackV == randomTrackM) randomTrackV = rand() % 3;
 
-	switch (randomTrack){
+	switch (randomTrackV){
 	case 0:
 		virus.track = lt;
-		virus.speed = 1.5;
+		virus.speed = getSpeedByDifficulty[0][difficulityStateIndex];
 		prevTrack = 0;
 		break;
 	case 1:
 		virus.track = mt;
-		virus.speed = .3;
+		virus.speed = getSpeedByDifficulty[1][difficulityStateIndex];
 		prevTrack = 1;
 		break;
 	case 2:
 		virus.track = rt;
-		virus.speed = 1;
+		virus.speed = getSpeedByDifficulty[2][difficulityStateIndex];
 		prevTrack = 2;
 		break;
 	default:
-		cout << "Error in generating randomTrack" << endl;
+		cout << "Error in generating randomTrack for Virus" << endl;
 	}
 
 	cout << virus.hide << endl;
 	activeViruses.push_back(virus);
 
-	if (activeViruses.size() == 10) {
+	if (activeViruses.size() == 30) {
 		activeViruses.pop_front();
 	}
 
 
 }
+void maskFactory(){
+	randomTrackM = rand() % 3;
+	while (randomTrackM == prevTrackM) randomTrackM = rand() % 3;
+	if (randomTrackM == randomTrackV) randomTrackM = prevTrack;
+
+	switch (randomTrackM){
+	case 0:
+		mask.trackM = lt;
+		mask.speedM = getSpeedByDifficulty[0][difficulityStateIndex];
+		prevTrackM = 0;
+		break;
+	case 1:
+		mask.trackM = mt;
+		mask.speedM = getSpeedByDifficulty[1][difficulityStateIndex];
+		prevTrackM = 1;
+		break;
+	case 2:
+		mask.trackM = rt;
+		mask.speedM = getSpeedByDifficulty[2][difficulityStateIndex];
+		prevTrackM = 2;
+		break;
+	default:
+		cout << "Error in generating randomTrack for Mask" << endl;
+	}
 
 
+	activeMasks.push_back(mask);
+
+	if (activeMasks.size() == 10) {
+		activeMasks.pop_front();
+	}
+
+
+}
 
 void iDraw()
 {
@@ -536,8 +640,9 @@ void iDraw()
 	iSetColor(r, g, b);
 
 	iText(0, 0, &currentPage[0]);
-
-	if (currentPage == "homePage")
+	if (currentPage == "introPage")
+		IntroFunction();
+	else if (currentPage == "homePage")
 		homePage();
 	else if (currentPage == "newGame"){
 
@@ -570,6 +675,16 @@ void iDraw()
 	else if (currentPage == "gameOverPage"){
 		gameOverPage();
 	}
+	else if (currentPage == "pauseMenu"){
+		pauseMenu();
+	}
+	else if (currentPage == "resume"){
+		currentPage = "newGame";
+	}
+	else if (currentPage == "exit"){
+		gameOver = true;
+		gameOverLogic();
+	}
 }
 
 
@@ -601,7 +716,9 @@ void iMouse(int button, int state, int mx, int my)
 	{
 		if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 		{
-			PlaySound("Sounds\\click.wav", NULL, SND_ASYNC);
+			if (currentPage != "gameOverPage"){
+				PlaySound("Sounds\\click.wav", NULL, SND_ASYNC);
+			}
 
 			if (currentPage == "homePage"){
 				for (int i = 0; i < totalMenuItems; i++){
@@ -611,14 +728,41 @@ void iMouse(int button, int state, int mx, int my)
 					}
 				}
 			}
-			else if (currentPage != "newGame" || currentPage != "homePage"){
-				if (mx < 100 && my < 100){
-					iShowBMP2(mpx, mpy, "images//home_black.bmp", 255);
-					currentPage = "homePage";
-					scrollY = 0;
-					scrollSettingsY = 0;
+
+			if (currentPage == "pauseMenu"){
+				for (int i = 0; i < totalMenuItems; i++){
+					if (menuItems2[i].isInsideThis(mx, my)){
+						menuItems2[i].cliked();
+						break;
+					}
 				}
 			}
+			else if (currentPage != "newGame"){
+				if (!pause){
+					if (mx < 100 && my < 100){
+						iShowBMP2(mpx, mpy, "images//home_black.bmp", 255);
+						currentPage = "homePage";
+						scrollY = 0;
+						scrollSettingsY = 0;
+					}
+				}
+				else{
+					if (mx < 100 && my < 100){
+						iShowBMP2(mpx, mpy, "images//home_black.bmp", 255);
+						currentPage = "pauseMenu";
+						scrollY = 0;
+						scrollSettingsY = 0;
+					}
+				}
+				
+			}
+			else if (currentPage == "newGame"){
+				if (mx < 100 && my < 700 && my > 630){
+					currentPage = "pauseMenu";
+
+				}
+			}
+		
 		}
 
 
@@ -681,7 +825,12 @@ void iKeyboard(unsigned char key){
 
 	}
 
-
+	if (key&&isHelpPage == true)
+	{
+		helpIndex++;
+		if (helpIndex > 3)
+			helpIndex = 1;
+	}
 }
 
 /*
@@ -706,14 +855,14 @@ void iSpecialKeyboard(unsigned char key)
 		}
 	}
 	else if (currentPage == "newGame"){
-		if (key == GLUT_KEY_RIGHT)
+		if (key == GLUT_KEY_RIGHT&&jump == false)
 		{
 			charecterX += 285;
 			if (charecterX > 720)
 				charecterX = 720;
 
 		}
-		if (key == GLUT_KEY_LEFT)
+		if (key == GLUT_KEY_LEFT&&jump == false)
 		{
 			charecterX -= 285;
 			if (charecterX < 150)
@@ -721,8 +870,11 @@ void iSpecialKeyboard(unsigned char key)
 
 		}
 		if (key == GLUT_KEY_UP){
-			if (!jump)
+			if (!jump){
 				jump = true;
+				BASS_ChannelPause(runningSound);
+				cout << "Sound Paused..." << jump << endl;
+			}
 		}
 	}
 
@@ -757,6 +909,10 @@ void iSpecialKeyboard(unsigned char key)
 				optionMusicOff = false;
 				optionMusicOn = true;
 			}
+			if (optionMusicOn == false)
+				BASS_ChannelPause(themeSong1);
+			
+		
 		}
 		else if (key == GLUT_KEY_LEFT && scrollSettingsY == 0){
 			if (optionMusicOn){
@@ -767,6 +923,8 @@ void iSpecialKeyboard(unsigned char key)
 				optionMusicOff = false;
 				optionMusicOn = true;
 			}
+			if (optionMusicOn == true)
+				BASS_ChannelPlay(themeSong1, true);
 		}
 		if (key == GLUT_KEY_RIGHT && scrollSettingsY == 100){
 
@@ -820,16 +978,24 @@ int main()
 {
 	//int runTimer = iSetTimer(0, run);
 	roadTimer = iSetTimer(100, moveRoad);
-	virusFactoryTimer = iSetTimer(1500, virusFactory);
+	charecterTimer = iSetTimer(10, moveCharecter);
+
+	pointTimer = iSetTimer(500,pointFunction);
+
+	virusFactoryTimer = iSetTimer(1600, virusFactory);
+	maskFactoryTimer = iSetTimer(30000,maskFactory);
+	introTimer = iSetTimer(100,intro_indexer);
 
 	srand((unsigned)time(NULL));
+
 	iInitialize(windowWidth, windowHeight, "My Game");
 	///updated see the documentations
+	
 	loadImages();
 
 	if (!BASS_Init(-1, 44100, 0, NULL, NULL))
 		cout << "Failed in BASS_Init" << endl;
-
+		
 	loadSounds();
 
 	iStart();

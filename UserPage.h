@@ -1,5 +1,5 @@
 void userPage(){
-
+	iShowImage(0, 0, 1020, 720, stBG);
 	iShowBMP2(200, 500, "images//12.bmp", 0);
 
 	iText(180, 360, ">>", GLUT_BITMAP_TIMES_ROMAN_24);
